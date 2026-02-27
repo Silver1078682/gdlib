@@ -1,9 +1,0 @@
-{
-    "godotFormatter.linterIgnoredRules": "class-name,const-name",
-    "cSpell.words": [
-        "lerp",
-        "nodepath",
-        "randf",
-        "rects"
-    ]
-}
