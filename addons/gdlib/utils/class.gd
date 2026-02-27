@@ -78,14 +78,14 @@ static func class_get_constant_names(
 
 ## Returns this object's methods and their signatures as an Array of dictionaries, or its ancestry if no_inheritance is false.
 ## Each Dictionary contains the following entries:
-## - name is the name of the method, as a String
-## - args is an Array of dictionaries representing the arguments
-## - default_args is the default arguments as an Array of variants
-## - flags is a combination of MethodFlags
-## - id is the method's internal identifier int
-## - return is the returned value, as a Dictionary with following keys: class_name, hint, hint_string, name, type, usage.
+## - name is the name of the method, as a String[br]
+## - args is an Array of dictionaries representing the arguments[br]
+## - default_args is the default arguments as an Array of variants[br]
+## - flags is a combination of MethodFlags[br]
+## - id is the method's internal identifier int[br]
+## - return is the returned value, as a Dictionary with following keys: class_name, hint, hint_string, name, type, usage.[br]
 ## Note: The dictionaries of args and return are formatted identically to the results of get_property_list(),
-## although not all entries are used.
+## although not all entries are used.[br]
 ## Note: In exported release builds the debug info from ClassDB is not available,
 ## so the returned dictionaries will contain only method names.
 static func class_get_method_list(class_id: Variant, no_inheritance: bool = false) -> Array[Dictionary]:

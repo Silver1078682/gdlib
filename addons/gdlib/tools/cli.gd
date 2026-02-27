@@ -161,26 +161,41 @@ class OptionArgument:
 ## pos - positional arguments hint[br]
 ## option - option arguments hint[br]
 ## option_doc - description of the arguments
-var help_string_format := """Usage: {prog} {pos} {option}
-{option_doc}"""
+var usage_string_format := ["Usage:", "{prog}", "{pos}", "{option}"]
+var usage_string_color := ["[color=green]%s[/color]", "[color=blue][b]%s[/b][/color]", "%s", "%s"]
+
+## Whether to use alphabetical order for option arguments.
+## If false, the order of option arguments is determined by their registration order.
 var option_docs_use_alphabetical_order := true
-var color_output := false
+var color_output := true
+
 
 ## Display help message.
 func print_help():
-	print(get_help_string())
+	if color_output:
+		print_rich(get_help_string(true))
+	else:
+		print(get_help_string(false))
 
 
 ## Get help string.
-func get_help_string() -> String:
-	return help_string_format.format(
-		{
-			"prog": program_name,
-			"pos": _get_positional_hint(),
-			"option": _get_option_hint(),
-			"option_doc": _get_option_docs_hint(),
-		},
+func get_help_string(use_color := false) -> String:
+	var formatted_arr := usage_string_format.map(
+		func(str: String):
+			return str.format(
+				{
+					"prog": program_name,
+					"pos": _get_positional_hint(),
+					"option": _get_option_hint(),
+					"option_doc": _get_option_docs_hint(),
+				},
+			)
 	)
+	if use_color:
+		for i in formatted_arr.size():
+			formatted_arr[i] = usage_string_color[i] % formatted_arr[i]
+	var usage_string = " ".join(formatted_arr.filter(func(str): return not str.is_empty()))
+	return usage_string + "\n" + _get_option_docs_hint()
 
 
 func _get_positional_hint() -> String:
@@ -197,11 +212,9 @@ func _get_option_hint() -> String:
 
 func _get_option_docs_hint() -> String:
 	var lines = []
-	var keys : PackedStringArray = option_args.keys() + aliases.keys()
+	var keys: PackedStringArray = option_args.keys() + aliases.keys()
 	if option_docs_use_alphabetical_order:
 		keys.sort()
-	keys.sort()
-	print(keys)
 	var unused_options := option_args.duplicate()
 	for i in keys:
 		var alias := ""

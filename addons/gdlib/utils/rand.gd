@@ -1,4 +1,5 @@
 class_name RandUtil
+## Library for generating random values and selecting elements.
 
 ## Returns a random Vector2 in a rect2
 static func rect2(rect: Rect2) -> Vector2:
@@ -6,13 +7,14 @@ static func rect2(rect: Rect2) -> Vector2:
 
 
 ## Returns a random Vector2i in a rect2i
+## By convention, points on the right and bottom edges are not included.
 static func rect2i(rect: Rect2i) -> Vector2i:
 	return Vector2i(randi_range(rect.position.x, rect.end.x), randi_range(rect.position.y, rect.end.y))
 
 
 ## Returns a random child of [param node]
 static func child_of(node: Node) -> Node:
-	return node.get_children().pick_random()
+	return node.get_children().pick_random() if node.get_child_count() else null
 
 
 ## Returns a random element of [param obj], [param obj] can be a [String], a [StringName], or an [Array]
@@ -31,6 +33,7 @@ static func element(obj: Variant) -> Variant:
 static func between(a: Variant, b: Variant) -> Variant:
 	return lerp(a, b, randf())
 
+
 # https://stackoverflow.com/questions/5837572/generate-a-random-point-within-a-circle-uniformly
 ## Returns a random point in a ring.
 ## The result is uniform.
@@ -38,10 +41,12 @@ static func ring(min_radius: float, max_radius: float, center := Vector2.ZERO) -
 	var r := sqrt(randf_range(min_radius ** 2, max_radius ** 2))
 	return (Vector2.LEFT * r).rotated(randf() * TAU) + center
 
+
 ## Returns a random point in a circle.
 ## The result is uniform.
 static func circle(radius := 1.0, center := Vector2.ZERO) -> Vector2:
 	return (Vector2.LEFT * sqrt(randf()) * radius).rotated(randf() * TAU) + center
+
 
 ## Returns a random point in a triangle.
 ## It's vertex are [param a], [param b] and [param c].
@@ -52,7 +57,8 @@ static func triangle(a: Vector2, b: Vector2, c: Vector2) -> Vector2:
 	if (wb + wc) > 1:
 		wb = 1 - wb
 		wc = 1 - wc
-	return wb * (b - a) +  wc * (c - a) + a
+	return wb * (b - a) + wc * (c - a) + a
+
 
 ## Returns a string containing only characters from [param chars]
 ## [codeblock]
@@ -100,20 +106,25 @@ class ShuffleBag:
 	var _items := []
 	var _left := []
 
+
 	func refill() -> void:
 		_left = _items.duplicate()
 		_left.shuffle()
+
 
 	func next() -> Variant:
 		if _left.is_empty():
 			refill()
 		return _left.pop_back()
 
+
 	func _iter_init(_iter):
 		return not _left.is_empty()
 
+
 	func _iter_next(_iter):
 		return not _left.is_empty()
+
 
 	func _iter_get(_iter):
 		return _left.pop_back()
@@ -138,6 +149,7 @@ class BinarySearchWRS:
 	var _left := 0
 	var _right := 0
 
+
 	func assign(dict: Dictionary) -> void:
 		_items = dict
 		_search_arr = [0]
@@ -145,11 +157,13 @@ class BinarySearchWRS:
 		for key in dict:
 			_search_arr.append(_search_arr[-1] + dict[key])
 
+
 	func pick() -> Variant:
 		_left = 0
 		_right = _search_arr.size()
 		var rand := randf_range(0, _search_arr[-1])
 		return _search(rand)
+
 
 	func _search(rand: float) -> Variant:
 		if abs(_left - _right) <= 1:
@@ -178,8 +192,10 @@ class AResWRS:
 	extends RefCounted
 	var _items: Dictionary
 
+
 	func assign(dict: Dictionary):
 		_items = dict
+
 
 	func pop(count := 1) -> Array:
 		var pool := _calc_eigen_value()
@@ -187,8 +203,9 @@ class AResWRS:
 		keys.sort_custom(func(x, y): return pool[x] > pool[y])
 		return keys.slice(0, count)
 
+
 	func _calc_eigen_value() -> Dictionary:
-		var pool := {}
+		var pool := { }
 		for key in _items:
 			var weight: float = _items[key]
 			var eigen := pow(randf(), 1 / weight)
@@ -215,10 +232,12 @@ class AliasWRS:
 	var _small: Array[Array] = []
 	var _large: Array[Array] = []
 
+
 	func assign(dict: Dictionary) -> void:
 		_items = dict
 		_init_queue()
 		_construct_alias_table()
+
 
 	func pick() -> Variant:
 		var area: Array = alias_table.pick_random()
@@ -227,6 +246,7 @@ class AliasWRS:
 			return area[0][0]
 		else:
 			return area[1][0]
+
 
 	func _init_queue():
 		var sum: float = _items.values().reduce(func(a, b): return a + b)
@@ -238,6 +258,7 @@ class AliasWRS:
 				_large.append([key, area])
 			else:
 				_small.append([key, area])
+
 
 	func _construct_alias_table():
 		while _small and _large:
