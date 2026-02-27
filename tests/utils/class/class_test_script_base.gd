@@ -6,15 +6,17 @@ class_name __ClassTestScriptBase__
 extends Node
 
 static var time: int
+
+
 static func sum(m, n, p):
-	return m+n+p
+	return m + n + p
 
 # Member variables.
 var a = 5
 var s = "Hello"
 var arr = [1, 2, 3]
-var dict = {"key": "value", 2: 3}
-var other_dict = {key = "value", other_key = 2}
+var dict = { "key": "value", 2: 3 }
+var other_dict = { key = "value", other_key = 2 }
 var typed_var: int
 var inferred_type := "String"
 
@@ -23,8 +25,8 @@ const ANSWER = 42
 const THE_NAME = "Charly"
 
 # Enums.
-enum {UNIT_NEUTRAL, UNIT_ENEMY, UNIT_ALLY}
-enum Named {THING_1, THING_2, ANOTHER_THING = -1}
+enum { UNIT_NEUTRAL, UNIT_ENEMY, UNIT_ALLY }
+enum Named { THING_1, THING_2, ANOTHER_THING = -1 }
 
 var v2 = Vector2(1, 2)
 var v3 = Vector3(1, 2, 3)

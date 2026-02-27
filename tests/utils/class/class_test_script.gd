@@ -1,17 +1,15 @@
 @icon("res://path/to/optional/icon.svg")
-
 class_name __ClassTestScript__
 
 # Inheritance:
 extends __ClassTestScriptBase__
 
-
 # Member variables.
 var a1 = 5
 var s1 = "Hello"
 var arr1 = [1, 2, 3]
-var dict1 = {"key": "value", 2: 3}
-var other_dict1 = {key = "value", other_key = 2}
+var dict1 = { "key": "value", 2: 3 }
+var other_dict1 = { key = "value", other_key = 2 }
 var typed_var1: int
 var inferred_type1 := "String"
 
@@ -19,8 +17,8 @@ var inferred_type1 := "String"
 const NEW_ANSWER = 42
 
 # Enums.
-enum {FIRE, WATER, WIND}
-enum Named1 {THING_1, THING_2, ANOTHER_THING = -1}
+enum { FIRE, WATER, WIND }
+enum Named1 { THING_1, THING_2, ANOTHER_THING = -1 }
 
 var v21 = Vector2(1, 2)
 var v31 = Vector3(1, 2, 3)
@@ -62,6 +60,7 @@ func something(p1, p2):
 # Inner class
 class Something:
 	var a = 9
+
 
 class SomethingElse:
 	var a = 9

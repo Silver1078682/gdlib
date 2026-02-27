@@ -7,12 +7,14 @@ var sibling: Node2D
 var material: CanvasItemMaterial
 var conflict: Node
 
+
 func before_all():
 	var window := get_node("/root")
 	var test_root := Node.new()
 	test_root.name = "Test"
 	window.add_child(test_root)
 	root = test_root
+
 
 func before_each():
 	child = Node2D.new()
@@ -29,10 +31,11 @@ func before_each():
 	sibling = Node2D.new()
 	sibling.name = "Sibling"
 	root.add_child(sibling)
-	
+
 	conflict = Node.new()
 	conflict.name = "position"
 	child.add_child(conflict)
+
 
 func after_each():
 	NodeUtil.free_children(root)
@@ -44,8 +47,8 @@ func test_get_from_nodepath() -> void:
 	assert_nodepath(root, ^"Child/GrandChild", grandchild)
 
 	assert_nodepath(child, ^":name", "Child")
-	assert_nodepath(child, ^":position", Vector2.ZERO) 
-	assert_nodepath(child, ^":position:x", 0.0) 
+	assert_nodepath(child, ^":position", Vector2.ZERO)
+	assert_nodepath(child, ^":position:x", 0.0)
 
 	assert_nodepath(root, ^"Child:name", "Child")
 
@@ -57,6 +60,7 @@ func test_get_from_nodepath() -> void:
 	assert_nodepath(child, ^"position", conflict)
 	assert_nodepath(child, ^":position", Vector2.ZERO)
 
+
 func test_get_from_nodepath_failure() -> void:
 	assert_nodepath(root, ^"", root)
 	assert_engine_error_count(2)
@@ -64,7 +68,6 @@ func test_get_from_nodepath_failure() -> void:
 	assert_push_error("can not find")
 	assert_nodepath_null(root, ^"@")
 	assert_push_error("can not find")
-	
 
 	assert_nodepath_null(root, ^"NotAChild")
 	assert_push_error("can not find")
@@ -82,6 +85,7 @@ func test_get_from_nodepath_failure() -> void:
 
 func assert_nodepath(a, b, c):
 	assert_eq(NodeUtil.get_from_nodepath(a, b), c)
+
 
 func assert_nodepath_null(a, b):
 	assert_null(NodeUtil.get_from_nodepath(a, b))
@@ -101,6 +105,7 @@ func test_ensure_ready() -> void:
 	await NodeUtil.ensure_ready(a)
 	assert_true(a.is_node_ready())
 
+
 func test_set_parent_of():
 	var b = Node.new()
 	root.add_child(b)
@@ -110,7 +115,7 @@ func test_set_parent_of():
 	assert_eq(child.get_parent(), root)
 	NodeUtil.set_parent_of(child, root)
 	assert_eq(child.get_parent(), root)
-	
+
 	var c = Node.new()
 	root.add_child(c)
 	NodeUtil.set_parent_of(c, root)
@@ -122,11 +127,12 @@ func test_set_parent_of():
 	NodeUtil.set_parent_of(null, c)
 	assert_push_error("Invalid node provided.")
 
+
 func test_free_children() -> void:
 	for i in 100:
 		var a = Node.new()
 		root.add_child(a)
-	var parent := root 
+	var parent := root
 	for i in 100:
 		var a = Node.new()
 		parent.add_child(a)

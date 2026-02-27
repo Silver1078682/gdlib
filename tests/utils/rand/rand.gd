@@ -1,6 +1,5 @@
 extends GutTest
 
-
 func test_rect2():
 	var rects = [
 		Rect2(Vector2(0, 0), Vector2(100, 200)),
@@ -9,12 +8,13 @@ func test_rect2():
 	]
 
 	for i in 10:
-		for rect:Rect2 in rects:
+		for rect: Rect2 in rects:
 			var point = RandUtil.rect2(rect)
 			if rect.size:
 				assert_true(rect.abs().has_point(point))
 			else:
 				assert_eq(point, rect.position)
+
 
 func test_rect2i():
 	var rects = [
@@ -23,9 +23,13 @@ func test_rect2i():
 		Rect2i(Vector2i(0, 0), Vector2i(0, 0)),
 	]
 	for i in 10:
-		for rect in rects:
+		for rect: Rect2i in rects:
 			var point = RandUtil.rect2i(rect)
-			assert_true(rect.has_point(point))
+			if rect.size:
+				assert_true(rect.abs().has_point(point))
+			else:
+				assert_eq(point, rect.position)
+
 
 func test_child_of():
 	var parent = Node.new()
@@ -64,7 +68,7 @@ func test_between():
 	result = RandUtil.between(-5, 5)
 	assert_true(result >= -5 and result <= 5, "Result not between the given values with negative range")
 	result = RandUtil.between(Vector3.ZERO, Vector3.ONE)
-	assert_true((result.x == result.y) and (result.x ==  result.z) and result.x >= 0 and result.x <= 1 )
+	assert_true((result.x == result.y) and (result.x == result.z) and result.x >= 0 and result.x <= 1)
 	result = RandUtil.between(0, 0)
 	assert_true(result == 0, "Result not equal to the given value when both values are equal")
 
@@ -83,18 +87,34 @@ func test_triangle():
 	var c = Vector2(0, 1)
 	var point = RandUtil.triangle(a, b, c)
 	assert_true(point.distance_to(Vector2(0.5, 0.5)) < 0.5, "Point not inside the triangle")
-	
+
 
 func test_string():
 	var result = RandUtil.string(5, "abc")
 	assert_true(result.length() == 5, "String length is incorrect")
 	for char in result:
 		assert_true(char in "abc", "String contains invalid character")
-	
 
-# Add similar test functions for all other static methods
-# func test_shuffle_bag() -> void:
-# 	pass
+
+func test_shuffle_bag() -> void:
+	const LIST = ["apple", "banana", "peach"]
+	_test_shuffle_bag(LIST)
+	_test_shuffle_bag(range(100))
+
+
+func _test_shuffle_bag(list: Array) -> void:
+	var bag = RandUtil.shuffle_bag(list)
+	for i in range(2):
+		var j = bag.next()
+		assert_true(j in list)
+
+	bag.refill()
+	var k := []
+	for i in bag:
+		k.append(i)
+	k.sort()
+	assert_eq(k, list)
+
 # func test_bs_wrs() -> void:
 # 	pass
 # func test_ares_wrs() -> void:

@@ -16,10 +16,10 @@ static func ensure_ready(node: Node) -> void:
 ## Set the parent of a node to [param]parent[/param].
 static func set_parent_of(node: Node, parent: Node) -> void:
 	if not node:
-		push_error("Invalid node provided.") 
+		push_error("Invalid node provided.")
 		return
 	if not parent:
-		push_error("Invalid parent provided.") 
+		push_error("Invalid parent provided.")
 		return
 	if node.get_parent():
 		node.reparent(parent)
@@ -64,12 +64,11 @@ static func ensure_children_freed(node: Node) -> void:
 		if not child.is_queued_for_deletion():
 			push_error("ensure_children_freed is called on a node, but queued_free never call on its child %s" % child)
 		await child.tree_exited
-		
 
 
 ## Returns an array containing all descendants nodes of node.
-static func get_descendants(node : Node, include_internal : bool = false) -> Array[Node]:
-	var result : Array[Node]
+static func get_descendants(node: Node, include_internal: bool = false) -> Array[Node]:
+	var result: Array[Node]
 	for child in node.get_children(include_internal):
 		result.append(child)
 		result += get_descendants(child, include_internal)

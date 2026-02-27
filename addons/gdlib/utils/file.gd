@@ -27,6 +27,7 @@ static func open_dir(path: String, force := false) -> DirAccess:
 		printerr("opening directory at %s failed: " % ProjectSettings.globalize_path(path) + error_string(error))
 	return dir
 
+
 ## Clear a directory.
 static func clear_dir(dir: DirAccess, recursive := true) -> void:
 	dir.list_dir_begin()
@@ -40,6 +41,7 @@ static func clear_dir(dir: DirAccess, recursive := true) -> void:
 		file_name = dir.get_next()
 	dir.list_dir_end()
 
+
 ## An iterator for files in a folder
 ## [codeblock]
 ## var dir = FileUtil.open_dir("res://folder")
@@ -48,17 +50,22 @@ static func clear_dir(dir: DirAccess, recursive := true) -> void:
 ## [/codeblock]
 class FileStream:
 	var _dir: DirAccess
+
+
 	func _init(dir: DirAccess) -> void:
 		_dir = dir
-	
+
+
 	func _iter_init(iter: Array) -> bool:
 		_dir.list_dir_begin()
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
-	
+
+
 	func _iter_next(iter: Array) -> bool:
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
+
 
 	func _iter_get(iter: Variant) -> Variant:
 		return iter

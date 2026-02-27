@@ -60,7 +60,7 @@ func test_class_call_static() -> void:
 	for i in base:
 		assert_eq(ClassUtil.class_call_static(i, &"sum", 1, 2, 3), 6)
 	#for i in unnamed:
-		#assert_eq(ClassUtil.class_call_static(i, &"multiply", 1, 2, 3), 6)
+	#assert_eq(ClassUtil.class_call_static(i, &"multiply", 1, 2, 3), 6)
 	for i in unnamed_child:
 		assert_eq(ClassUtil.class_call_static(i, &"mean", 1, 2, 3), 2)
 
