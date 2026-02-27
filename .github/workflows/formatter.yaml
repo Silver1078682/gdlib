@@ -10,4 +10,4 @@ jobs:
 
     steps:
       - name: Format GDScript Code
-      - uses: quantum-defence/gdformatter@v0.1.5
+        uses: quantum-defence/gdformatter@v0.1.5
