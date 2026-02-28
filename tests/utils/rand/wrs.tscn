@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bp678ncna4kyb"]
+
+[ext_resource type="Script" uid="uid://2px7mkqyklix" path="res://tests/utils/rand/wrs_benchmark.gd" id="1_tbhp7"]
+
+[node name="Wrs" type="Node" unique_id=1235594377]
+script = ExtResource("1_tbhp7")

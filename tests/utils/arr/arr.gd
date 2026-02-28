@@ -3,7 +3,6 @@ extends GutTest
 func before_all():
 	GutTestHelper.coverage(ArrUtil, self)
 
-
 func test_sum() -> void:
 	var arr: Array
 	arr = []
@@ -90,10 +89,11 @@ func test_matrix() -> void:
 	assert_true(matrix.size() == 4)
 	for i in range(3):
 		assert_true(matrix[i] == [0, 0, 0])
+	assert_not_same(matrix[0], matrix[1])
 
 	var arr: Array[int] = []
 	matrix = ArrUtil.matrix(range(1, 10), 10, arr)
-	var k: Array = matrix
+	var k : Array = matrix
 	for i in range(9, 1, -1):
 		assert_eq(k.size(), i)
 		k = k[0]
