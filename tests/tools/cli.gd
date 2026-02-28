@@ -1,8 +1,7 @@
 extends GutTest
 
+
 var parser: CommandLineParser
-
-
 func before_each():
 	parser = CommandLineParser.new()
 
@@ -12,7 +11,6 @@ func test_parser_init() -> void:
 	assert_eq(parser.positional_args.size(), 0)
 	assert_eq(parser.option_args.size(), 0)
 	assert_eq(parser.aliases.size(), 0)
-
 
 func test_positional_arg():
 	parser.add_positional_arg("input", "input file location")
@@ -32,7 +30,6 @@ func test_positional_arg():
 	assert_eq(pos[0], "abc")
 	assert_eq(pos[1], "def")
 
-
 func test_option_arg() -> void:
 	parser.add_option_arg("help", "print help")
 	assert_eq(parser.option_args.size(), 1)
@@ -48,13 +45,12 @@ func test_option_arg() -> void:
 	opt = parser.get_option_args()
 	assert_true(opt.has("help"))
 	assert_eq(opt["help"], PackedStringArray(["option"]))
-
+	
 	assert_true(parser.parse("--help --output res://b.txt"))
 	opt = parser.get_option_args()
 	assert_true(opt.has("help"))
 	assert_eq(opt["help"], PackedStringArray())
 	assert_eq(opt["output"], PackedStringArray(["res://b.txt"]))
-
 
 func test_aliases() -> void:
 	parser.add_option_arg("help", "print help", "h")
@@ -72,29 +68,28 @@ func test_aliases() -> void:
 	assert_true(opt.has("help"))
 	assert_eq(opt["help"], PackedStringArray(["option"]))
 	assert_true(parser.parse("--output res://b.txt"))
+	
 
 
 func test_hybrid() -> void:
 	parser.check_validation = false
 	parser.parse("pos1 pos2 --one 1 --two 2 string \t\t--space\t\n 5\t\t --flag --repeat 1 --repeat 2")
 	assert_eq(Array(parser.get_positional_args()), ["pos1", "pos2"])
-	var opt: Dictionary[StringName, Array] = { }
+	var opt : Dictionary[StringName, Array] = {}
 	opt.assign(parser.get_option_args())
-	assert_eq_deep(opt, { "one": ['1'], "two": ['2', "string"], "space": ["5"], "flag": [], "repeat": ["1", "2"] })
-
+	assert_eq_deep(opt, {"one": ['1'], "two": ['2', "string"], "space": ["5"], "flag": [], "repeat": ["1", "2"]})
 
 func test_help() -> void:
 	parser.add_positional_arg("input", "input file location")
-	parser.add_option_arg("help", "print help", "h")
+	parser.add_option_arg("help", "print help" , "h")
 	parser.add_option_arg("output", "output file location", "o")
 	parser.add_option_arg("log", "log level", "")
-	assert_eq(
-		parser.get_help_string(),
-		"""Usage: <input> [options]
--h        --help    print help
-          --log     log level
--o        --output  output file location""",
-	)
+	assert_eq(parser.get_help_string(), 
+"""Usage: <input> [options]
+-h        --help              print help
+          --log               log level
+-o        --output            output file location""")
 	parser.print_help()
-	parser.color_output = false
+	parser.bbcode_output = false
 	parser.print_help()
+	

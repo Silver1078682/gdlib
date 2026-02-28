@@ -161,25 +161,26 @@ class OptionArgument:
 ## pos - positional arguments hint[br]
 ## option - option arguments hint[br]
 ## option_doc - description of the arguments
+## Elements are concatenated with spaces, empty tring will be ignored
 var usage_string_format := ["Usage:", "{prog}", "{pos}", "{option}"]
-var usage_string_color := ["[color=green]%s[/color]", "[color=blue][b]%s[/b][/color]", "%s", "%s"]
+var usage_string_bbcode := ["[color=green]%s[/color]", "[color=lightblue][b]%s[/b][/color]", "[color=lightblue]%s[/color]", "[color=lightblue]%s[/color]"]
 
 ## Whether to use alphabetical order for option arguments.
 ## If false, the order of option arguments is determined by their registration order.
 var option_docs_use_alphabetical_order := true
-var color_output := true
+var bbcode_output := true
 
 
 ## Display help message.
 func print_help():
-	if color_output:
+	if bbcode_output:
 		print_rich(get_help_string(true))
 	else:
 		print(get_help_string(false))
 
 
 ## Get help string.
-func get_help_string(use_color := false) -> String:
+func get_help_string(use_bbcode := false) -> String:
 	var formatted_arr := usage_string_format.map(
 		func(str: String):
 			return str.format(
@@ -191,10 +192,11 @@ func get_help_string(use_color := false) -> String:
 				},
 			)
 	)
-	if use_color:
+	formatted_arr = formatted_arr.filter(func(str): return not str.is_empty())
+	if use_bbcode:
 		for i in formatted_arr.size():
-			formatted_arr[i] = usage_string_color[i] % formatted_arr[i]
-	var usage_string = " ".join(formatted_arr.filter(func(str): return not str.is_empty()))
+			formatted_arr[i] = usage_string_bbcode[i] % formatted_arr[i]
+	var usage_string = " ".join(formatted_arr)
 	return usage_string + "\n" + _get_option_docs_hint()
 
 
@@ -228,6 +230,6 @@ func _get_option_docs_hint() -> String:
 			unused_options.erase(option)
 		else:
 			continue
-		lines.append("%-10s%-20s%-10s" % [("-" + alias) if alias else "", "--" + option, option_args[option].description])
+		lines.append("%-10s%-20s%s" % [("-" + alias) if alias else "", "--" + option, option_args[option].description])
 	return "\n".join(lines)
 #endregion
