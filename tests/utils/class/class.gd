@@ -2,7 +2,7 @@ extends GutTest
 
 const __ClassTestUnnamedScript__ = preload("uid://cswlfufiy0n3u")
 
-var node2d = ["Node2D", Node2D.new()]
+var node2d = ["Node2D",Node2D, Node2D.new()]
 var base = [__ClassTestScriptBase__, "__ClassTestScriptBase__"]
 var test = [__ClassTestScript__, "__ClassTestScript__", __ClassTestScript__.new()]
 var unnamed = [__ClassTestUnnamedScript__, __ClassTestUnnamedScript__.new()]

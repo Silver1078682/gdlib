@@ -222,9 +222,20 @@ static func query_class(class_id: Variant) -> Variant:
 	if class_id is Script:
 		return class_id
 	if class_id is Object:
+		if class_id in _virtual_object.classes:
+			return _virtual_object.classes[class_id]
 		var script = class_id.get_script()
 		return (script as Script) if script else (class_id.get_class() as StringName)
 	return null
 
 
 static var _cache_hash_map: Dictionary[String, Script]
+
+static var _VirtualScript := GDScript.new()
+static var _virtual_object := RefCounted.new()
+
+static func _static_init() -> void:
+	var class_list := Array(ClassDB.get_class_list()).filter(func(name): return ClassDB.can_instantiate(name)).map(func(name): return name + ': &"%s"' % name) # Node = &"Node"
+	_VirtualScript.source_code = "extends RefCounted\nvar classes = {" + ",".join(class_list) + "}"
+	_VirtualScript.reload()
+	_virtual_object.set_script(_VirtualScript)
