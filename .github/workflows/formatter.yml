@@ -1,0 +1,15 @@
+name: GDscript Formatter
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2
+      - name: Format GDScript Code
+        uses: ./.github/actions/gdformatter
