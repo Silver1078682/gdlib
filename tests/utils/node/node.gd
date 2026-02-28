@@ -3,7 +3,7 @@ extends GutTest
 var root: Node
 var child: Node2D
 var grandchild: Node2D
-var sibling: Node2D
+var sibling: Node
 var material: CanvasItemMaterial
 var conflict: Node
 
@@ -144,3 +144,34 @@ func test_free_children() -> void:
 
 	await NodeUtil.ensure_children_freed(root)
 	assert_eq(root.get_child_count(), 0)
+
+
+func test_constrain_children_type() -> void:
+	NodeUtil.assert_children_type(child, Node2D)
+	assert_push_error_count(1) # conflict is not Node2D
+	child.add_child(Control.new()) 
+	assert_push_error_count(2)
+	grandchild.add_child(Node.new()) #grandchild does not trigger asserter
+	assert_push_error_count(2)
+
+	assert_true(child.child_entered_tree.get_connections().size() == 1)
+	var callable : Callable= child.child_entered_tree.get_connections()[0]["callable"]
+	var object := callable.get_object()
+	assert_true(object is NodeUtil._ChildrenTypeAsserter)
+	
+	root.remove_child(child)
+	assert_false(is_instance_valid(object))
+
+	root.add_child(child)
+	NodeUtil.assert_children_type(child, Node2D)
+	assert_push_error_count(4) # conflict & newly-added Control
+	callable = child.child_entered_tree.get_connections()[0]["callable"]
+	object = callable.get_object()
+	assert_true(object is NodeUtil._ChildrenTypeAsserter)
+	child.queue_free()
+	assert_true(is_instance_valid(object))
+	child.cancel_free()
+	assert_true(is_instance_valid(object))
+	child.queue_free()
+	await child.tree_exited
+	assert_false(is_instance_valid(object))

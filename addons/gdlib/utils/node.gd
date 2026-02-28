@@ -73,3 +73,36 @@ static func get_descendants(node: Node, include_internal: bool = false) -> Array
 		result.append(child)
 		result += get_descendants(child, include_internal)
 	return result
+
+
+## Constrain the children of node to a specific type. [br]
+## The restriction will [b]continue[/b] to apply until the node exits scene tree.
+## If a children of a type that is not desired is added as its child, push an error.
+static func assert_children_type(node: Node, type: Variant):
+	_ChildrenTypeAsserter.new(node, type)
+
+
+class _ChildrenTypeAsserter extends Object:
+	func _init(node: Node, type) -> void:
+		if node.is_queued_for_deletion():
+			push_error("assert_children_type cannot be called on a node queued for deletion")
+			return
+		if not node.is_inside_tree():
+			push_error("assert_children_type cannot be called on a node that is not inside scene tree")
+			return
+
+		for child in node.get_children():
+			_check(child, type)
+		node.tree_exited.connect(free)
+		node.child_entered_tree.connect(_check.bind(type))
+
+
+	func _check(child: Node, type: Variant):
+		if not is_instance_of(child, type):
+			push_error(
+				"assert_children_type: child %s is expected to be type %s, but given %s" % [
+					child,
+					ClassUtil.query_class(type),
+					ClassUtil.query_class(child),
+				],
+			)
