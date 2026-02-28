@@ -48,7 +48,7 @@ runs:
   using: "composite"
   steps:
     - name: checkout repo content
-      uses: actions/checkout@v2
+      uses: actions/checkout@v6
 
     - name: setup python
       uses: actions/setup-python@v2
@@ -68,23 +68,11 @@ runs:
 
     - name: Create Pull Request
       id: cpr
-      uses: peter-evans/create-pull-request@v3
+      uses: peter-evans/create-pull-request@v8
       with:
-        token: ${{ github.event.inputs.token }}
-        path: ${{ github.event.inputs.path }}
-        commit-message: ${{ github.event.inputs.commit-message }}
-        committer: ${{ github.events.inputs.committer }}
-        author: ${{ github.events.inputs.author }}
-        branch: ${{ github.events.inputs.branch }}
-        branch-suffix: ${{ github.events.inputs.branch-suffix }}
-        delete-branch: ${{ github.events.inputs.delete-branch }}
         title: 'Changes by gdformatter action.'
         body: 'Automated changes by [gdformatter](https://github.com/quantum-defence/gdformatter) GitHub action'
-        labels: ${{ github.events.inputs.labels }}
-        assignees: ${{ github.events.inputs.assignees }}
-        reviewers: ${{ github.events.inputs.reviewers }}
-        team-reviewers: ${{ github.events.inputs.team-reviewers }}
-        draft: ${{ github.events.inputs.draft }}
+
 
     - name: Check outputs
       run: |
