@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://ccnyeocr01215"]
+
+[ext_resource type="Script" uid="uid://bvubqjxkia8xj" path="res://tests/utils/rand/point.gd" id="1_qttke"]
+
+[node name="Point" type="Node2D" unique_id=1739353421]
+script = ExtResource("1_qttke")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1745956473]
