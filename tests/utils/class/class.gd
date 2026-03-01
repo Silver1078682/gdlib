@@ -15,8 +15,14 @@ var undefined = ["__NonExistentClass__", "__ClassTestUnnamedScript__"]
 
 
 func before_all():
-	GutTestHelper.coverage(ClassUtil, self)
+	GutTestHelper.coverage(ClassUtil, self )
 
+func test_get_class_list() -> void:
+	var class_list = ClassUtil.get_class_list()
+	for i in ClassDB.get_class_list():
+		assert_true(i in class_list)
+	for i in ProjectSettings.get_global_class_list():
+		assert_true(i["class"] in class_list)
 
 func test_query_class() -> void:
 	assert_true(ClassUtil.query_class("ClassUtil") is Script)
@@ -33,6 +39,30 @@ func test_class_exists() -> void:
 		assert_true(ClassUtil.class_exists(i))
 	for i in undefined:
 		assert_false(ClassUtil.class_exists(i))
+
+func test_get_parent_class() -> void:
+	for i in node2d:
+		assert_eq(ClassUtil.get_parent_class(i), &"CanvasItem")
+	for i in base:
+		assert_eq(ClassUtil.get_parent_class(i), &"Node")
+	for i in test:
+		assert_eq(ClassUtil.get_parent_class(i), &"__ClassTestScriptBase__")
+	for i in unnamed:
+		assert_eq(ClassUtil.get_parent_class(i), &"Node")
+	for i in unnamed_child:
+		assert_eq(ClassUtil.get_parent_class(i), &"")
+
+func test_get_ancestry_classes() -> void:
+	for i in node2d:
+		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node", "CanvasItem"])
+	for i in base:
+		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node"])
+	for i in test:
+		assert_arr_eq(ClassUtil.get_ancestry_classes(i), [ "Object", "Node", "__ClassTestScriptBase__",])
+	for i in unnamed:
+		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node", ])
+	for i in unnamed_child:
+		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node","",   ])
 
 
 func test_can_class_instantiate() -> void:
@@ -54,7 +84,7 @@ func test_can_class_instantiate() -> void:
 func test_class_call_static() -> void:
 	DirAccess.open("res://tests/non-existent-test")
 	assert_eq(ClassUtil.class_call_static("DirAccess", &"get_open_error"), ERR_INVALID_PARAMETER)
-	ClassUtil.class_call_static("Engine", &"is_editor_hint")  #This is not a static function
+	ClassUtil.class_call_static("Engine", &"is_editor_hint") # This is not a static function
 	assert_engine_error_count(1)
 
 	for i in base:
@@ -92,11 +122,11 @@ func test_class_get_constant_names() -> void:
 	var dd = PackedStringArray((__ClassTestScriptBase__ as Script).get_script_constant_map().keys())
 	var ee = PackedStringArray((__ClassTestScript__ as Script).get_script_constant_map().keys())
 
-	assert_arr_eq(a, o)
-	assert_arr_eq(b, o)
-	assert_arr_eq(c, n + o)
-	assert_arr_eq(d, dd + n + o)
-	assert_arr_eq(e, ee + dd + n + o)
+	assert_arr_c(a, o)
+	assert_arr_c(b, o)
+	assert_arr_c(c, n + o)
+	assert_arr_c(d, dd + n + o)
+	assert_arr_c(e, ee + dd + n + o)
 
 	a = ClassUtil.class_get_constant_names("Object", true)
 	b = ClassUtil.class_get_constant_names("ClassUtil", true)
@@ -104,14 +134,19 @@ func test_class_get_constant_names() -> void:
 	d = ClassUtil.class_get_constant_names("__ClassTestScriptBase__", true)
 	e = ClassUtil.class_get_constant_names("__ClassTestScript__", true)
 
-	assert_arr_eq(a, o)
-	assert_arr_eq(b, [])
-	assert_arr_eq(c, n)
-	assert_arr_eq(d, dd)
-	assert_arr_eq(e, ee)
+	assert_arr_c(a, o)
+	assert_arr_c(b, [])
+	assert_arr_c(c, n)
+	assert_arr_c(d, dd)
+	assert_arr_c(e, ee)
 
 
 func assert_arr_eq(a, b):
+	assert_eq(Array(a), Array(b))
+
+func assert_arr_c(a, b):
 	a.sort()
 	b.sort()
 	assert_eq(Array(a), Array(b))
+	if Array(a) != Array(b):
+		print(a, b)

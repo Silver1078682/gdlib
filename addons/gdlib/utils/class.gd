@@ -1,7 +1,7 @@
 class_name ClassUtil
 ## A helper to static analyze and manipulate Built-in and user-defined classes with ease.
 ##
-## This class provide a uniform interface for classes in ClassDB (built-in and GD-extention)
+## This class provide a uniform interface for classes in ClassDB (built-in and GD-extension)
 ## and Script-defined classes (those with class_name)
 ## There are many ways to represent a class and ClassUtil accept them all.
 ## [codeblock]
@@ -158,7 +158,7 @@ static func class_get_property_list(
 
 
 ## Returns the list of existing signals as an Array of Dictionaries, or its ancestry if no_inheritance is false.
-## Every element of the array is a Dictionary as described in class_get_signal().
+## Every element of the array is a Dictionary as described in [method class_get_signal()].
 static func class_get_signal_list(
 	class_id: Variant, no_inheritance: bool = false
 ) -> Array[Dictionary]:
@@ -172,6 +172,8 @@ static func class_get_signal_list(
 	)
 
 
+## Returns the parent class name of [param class_id] as a StringName, 
+## If no parent exists or parent class does not have a global name, an empty StringName is returned.
 static func get_parent_class(class_id: Variant) -> StringName:
 	var result = query_class(class_id)
 	if result is StringName:
@@ -179,14 +181,30 @@ static func get_parent_class(class_id: Variant) -> StringName:
 	if result is Script:
 		var script: Script = result
 		var parent_script := script.get_base_script()
-		return (
-			parent_script.get_global_name()
-			if parent_script
-			else parent_script.get_instance_base_type()
-		)
+		if parent_script != null:
+			return parent_script.get_global_name()
+		return script.get_instance_base_type()
 	push_warning("Invalid class ID provided")
 	return ""
 
+## Returns all the ancestry classes of [param class_id] as a PackedStringArray.
+## The list is sorted from the base class(i.e. Object) to the most derived class.
+static func get_ancestry_classes(class_id: Variant) -> PackedStringArray:
+	var result = query_class(class_id)
+	if result is StringName:
+		var parent_class := ClassDB.get_parent_class(result)
+		if parent_class != "":
+			return get_ancestry_classes(parent_class) + PackedStringArray([parent_class])
+		return []
+	if result is Script:
+		var script: Script = result
+		var parent_script := script.get_base_script()
+		if parent_script != null:
+			var parent_script_name := parent_script.get_global_name()
+			return get_ancestry_classes(parent_script) + PackedStringArray([parent_script_name])
+		return get_ancestry_classes(script.get_instance_base_type()) + PackedStringArray([script.get_instance_base_type()])
+	push_warning("Invalid class ID provided")
+	return []
 
 ## Creates an instance of class.
 static func instantiate(class_id: Variant) -> Variant:
@@ -268,9 +286,9 @@ static var _virtual_object := RefCounted.new()
 static func _static_init() -> void:
 	var class_list := (
 		Array(ClassDB.get_class_list())
-		. filter(func(name): return ClassDB.can_instantiate(name))
-		. map(func(name): return name + ': &"%s"' % name)
-	)  # Node = &"Node"
+		.filter(func(name): return ClassDB.can_instantiate(name))
+		.map(func(name): return name + ': &"%s"' % name)
+	) # Node = &"Node"
 	_VirtualScript.source_code = "extends RefCounted\nvar classes = {" + ",".join(class_list) + "}"
 	_VirtualScript.reload()
 	_virtual_object.set_script(_VirtualScript)
