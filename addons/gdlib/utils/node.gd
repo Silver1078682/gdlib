@@ -1,5 +1,6 @@
 class_name NodeUtil
 
+
 ## Ensure a node is ready before proceeding.
 ## await is required before this function
 static func ensure_ready(node: Node) -> void:
@@ -62,7 +63,12 @@ static func free_children(parent: Node) -> void:
 static func ensure_children_freed(node: Node) -> void:
 	for child in node.get_children():
 		if not child.is_queued_for_deletion():
-			push_error("ensure_children_freed is called on a node, but queued_free not called or cancelled on its child %s" % child)
+			push_error(
+				(
+					"ensure_children_freed is called on a node, but queued_free not called or cancelled on its child %s"
+					% child
+				)
+			)
 			return
 		await child.tree_exited
 
@@ -83,13 +89,17 @@ static func assert_children_type(node: Node, type: Variant):
 	_ChildrenTypeAsserter.new(node, type)
 
 
-class _ChildrenTypeAsserter extends Object:
+class _ChildrenTypeAsserter:
+	extends Object
+
 	func _init(node: Node, type) -> void:
 		if node.is_queued_for_deletion():
 			push_error("assert_children_type cannot be called on a node queued for deletion")
 			return
 		if not node.is_inside_tree():
-			push_error("assert_children_type cannot be called on a node that is not inside scene tree")
+			push_error(
+				"assert_children_type cannot be called on a node that is not inside scene tree"
+			)
 			return
 
 		for child in node.get_children():
@@ -97,13 +107,15 @@ class _ChildrenTypeAsserter extends Object:
 		node.tree_exited.connect(free)
 		node.child_entered_tree.connect(_check.bind(type))
 
-
 	func _check(child: Node, type: Variant):
 		if not is_instance_of(child, type):
 			push_error(
-				"assert_children_type: child %s is expected to be type %s, but given %s" % [
-					child,
-					ClassUtil.query_class(type),
-					ClassUtil.query_class(child),
-				],
+				(
+					"assert_children_type: child %s is expected to be type %s, but given %s"
+					% [
+						child,
+						ClassUtil.query_class(type),
+						ClassUtil.query_class(child),
+					]
+				),
 			)

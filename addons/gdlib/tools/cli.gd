@@ -45,7 +45,7 @@ func parse(string: String) -> bool:
 func parse_arr(args: PackedStringArray) -> bool:
 	_has_errors = false
 	var _pos := PackedStringArray()
-	var _opt: Dictionary[StringName, PackedStringArray] = { }
+	var _opt: Dictionary[StringName, PackedStringArray] = {}
 
 	var store := _pos
 	for i in args:
@@ -95,6 +95,7 @@ func _error(message: String):
 	printerr(message)
 	print_help()
 
+
 #endregion
 
 #region config
@@ -140,7 +141,6 @@ class PositionalArgument:
 	var name: StringName
 	var description: StringName
 
-
 	func _init(p_name, p_description) -> void:
 		name = p_name
 		description = p_description
@@ -149,9 +149,10 @@ class PositionalArgument:
 class OptionArgument:
 	var description: StringName
 
-
 	func _init(p_description) -> void:
 		description = p_description
+
+
 #endregion
 
 #region help
@@ -163,7 +164,12 @@ class OptionArgument:
 ## option_doc - description of the arguments
 ## Elements are concatenated with spaces, empty tring will be ignored
 var usage_string_format := ["Usage:", "{prog}", "{pos}", "{option}"]
-var usage_string_bbcode := ["[color=green]%s[/color]", "[color=lightblue][b]%s[/b][/color]", "[color=lightblue]%s[/color]", "[color=lightblue]%s[/color]"]
+var usage_string_bbcode := [
+	"[color=green]%s[/color]",
+	"[color=lightblue][b]%s[/b][/color]",
+	"[color=lightblue]%s[/color]",
+	"[color=lightblue]%s[/color]"
+]
 
 ## Whether to use alphabetical order for option arguments.
 ## If false, the order of option arguments is determined by their registration order.
@@ -183,13 +189,16 @@ func print_help():
 func get_help_string(use_bbcode := false) -> String:
 	var formatted_arr := usage_string_format.map(
 		func(str: String):
-			return str.format(
-				{
-					"prog": program_name,
-					"pos": _get_positional_hint(),
-					"option": _get_option_hint(),
-					"option_doc": _get_option_docs_hint(),
-				},
+			return (
+				str
+				. format(
+					{
+						"prog": program_name,
+						"pos": _get_positional_hint(),
+						"option": _get_option_hint(),
+						"option_doc": _get_option_docs_hint(),
+					},
+				)
 			)
 	)
 	formatted_arr = formatted_arr.filter(func(str): return not str.is_empty())
@@ -230,6 +239,11 @@ func _get_option_docs_hint() -> String:
 			unused_options.erase(option)
 		else:
 			continue
-		lines.append("%-10s%-20s%s" % [("-" + alias) if alias else "", "--" + option, option_args[option].description])
+		lines.append(
+			(
+				"%-10s%-20s%s"
+				% [("-" + alias) if alias else "", "--" + option, option_args[option].description]
+			)
+		)
 	return "\n".join(lines)
 #endregion

@@ -1,6 +1,5 @@
 @icon("res://path/to/optional/icon.svg")
-@abstract
-class_name __ClassTestScriptBase__
+@abstract class_name __ClassTestScriptBase__
 
 # Inheritance:
 extends Node
@@ -11,12 +10,13 @@ static var time: int
 static func sum(m, n, p):
 	return m + n + p
 
+
 # Member variables.
 var a = 5
 var s = "Hello"
 var arr = [1, 2, 3]
-var dict = { "key": "value", 2: 3 }
-var other_dict = { key = "value", other_key = 2 }
+var dict = {"key": "value", 2: 3}
+var other_dict = {key = "value", other_key = 2}
 var typed_var: int
 var inferred_type := "String"
 

@@ -1,8 +1,9 @@
 class_name GutTestHelper
 
+
 static func coverage(script, gut_test: GutTest):
 	var tests := []
-	for i : String in ClassUtil.class_get_method_list(script, true).map(func(a): return a.name):
+	for i: String in ClassUtil.class_get_method_list(script, true).map(func(a): return a.name):
 		if i.begins_with("_"):
 			continue
 		if not gut_test.has_method("test_" + i):

@@ -1,7 +1,9 @@
 extends GutTest
 
+
 func before_all():
 	GutTestHelper.coverage(ArrUtil, self)
+
 
 func test_sum() -> void:
 	var arr: Array
@@ -93,7 +95,7 @@ func test_matrix() -> void:
 
 	var arr: Array[int] = []
 	matrix = ArrUtil.matrix(range(1, 10), 10, arr)
-	var k : Array = matrix
+	var k: Array = matrix
 	for i in range(9, 1, -1):
 		assert_eq(k.size(), i)
 		k = k[0]
