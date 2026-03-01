@@ -3,10 +3,22 @@ class_name ClassUtil
 ##
 ## This class provide a uniform interface for classes in ClassDB (built-in and GD-extention)
 ## and Script-defined classes (those with class_name)
-## You can pass one of the following as the class_id parameter in class_* methods[br]
-## -String, the name of a built-in class or script-defined class[br]
-## -Script, the script as a custom class[br]
-## -Object, an object that extends from the class to be analyzed[br]
+## There are many ways to represent a class and ClassUtil accept them all.
+## [codeblock]
+## # built-in (ClassDB)
+## query_class("Node")			# name as a String
+## query_class(Node)			# name itself
+## query_class(Node.new())		# an instance
+## # script-defined
+## query_class("MyClass")		# name as a String
+## query_class(MyClass)			# global name (class_name)
+## query_class(MyClass.new())	# an instance 
+## var dynamic_loaded := preload("res://my_class.gd")
+## query_class(dynamic_loaded)	# access by Script
+## [/codeblock]
+## [b]Note[/b]: non-Object Variant like int, String and Array is not managed by ClassUtil[br]
+## [b]Note[/b]: GDExtension should be a part of ClassDB, but they have not been tested
+
 
 # Returns the names of all engine classes available.
 static func get_class_list() -> PackedStringArray:
@@ -78,12 +90,12 @@ static func class_get_constant_names(
 
 ## Returns this object's methods and their signatures as an Array of dictionaries, or its ancestry if no_inheritance is false.
 ## Each Dictionary contains the following entries:
-## - name is the name of the method, as a String[br]
-## - args is an Array of dictionaries representing the arguments[br]
-## - default_args is the default arguments as an Array of variants[br]
-## - flags is a combination of MethodFlags[br]
-## - id is the method's internal identifier int[br]
-## - return is the returned value, as a Dictionary with following keys: class_name, hint, hint_string, name, type, usage.[br]
+## - [code]name[/code] is the name of the method, as a String[br]
+## - [code]args[/code] is an Array of dictionaries representing the arguments[br]
+## - [code]default_args[/code] is the default arguments as an Array of variants[br]
+## - [code]flags[/code] is a combination of MethodFlags[br]
+## - [code]id[/code] is the method's internal identifier int[br]
+## - [code]return[/code] is the returned value, as a Dictionary with following keys: class_name, hint, hint_string, name, type, usage.[br]
 ## Note: The dictionaries of args and return are formatted identically to the results of get_property_list(),
 ## although not all entries are used.[br]
 ## Note: In exported release builds the debug info from ClassDB is not available,
@@ -115,12 +127,12 @@ static func class_get_property_default_value(class_id: Variant, property: String
 
 ## Returns the property list of class as an Array of dictionaries, or its ancestry if no_inheritance is false.
 ## Each Dictionary contains the following entries:[br]
-## - name is the property's name, as a String[br]
-## - class_name is an empty StringName, unless the property is TYPE_OBJECT and it inherits from a class[br]
-## - type is the property's type, as an int (see Variant.Type)[br]
-## - hint is how the property is meant to be edited (see PropertyHint)[br]
-## - hint_string depends on the hint (see PropertyHint)[br]
-## - usage is a combination of PropertyUsageFlags.[br]
+## - [code]name[/code] is the property's name, as a String[br]
+## - [code]class_name[/code] is an empty StringName, unless the property is TYPE_OBJECT and it inherits from a class[br]
+## - [code]type[/code] is the property's type, as an int (see Variant.Type)[br]
+## - [code]hint[/code] is how the property is meant to be edited (see PropertyHint)[br]
+## - [code]hint_string[/code] depends on the hint (see PropertyHint)[br]
+## - [code]usage[/code] is a combination of PropertyUsageFlags.[br]
 ## Note: In GDScript, all class members are treated as properties. In C# and GDExtension, it may be necessary to explicitly mark class members as Godot properties using decorators or attributes.
 static func class_get_property_list(class_id: Variant, no_inheritance: bool = false) -> Array[Dictionary]:
 	return _class_get_recursively(
@@ -135,7 +147,7 @@ static func class_get_property_list(class_id: Variant, no_inheritance: bool = fa
 	)
 
 
-## Returns the list of existing signals as an Array of dictionaries, or its ancestry if no_inheritance is false.
+## Returns the list of existing signals as an Array of Dictionaries, or its ancestry if no_inheritance is false.
 ## Every element of the array is a Dictionary as described in class_get_signal().
 static func class_get_signal_list(class_id: Variant, no_inheritance: bool = false) -> Array[Dictionary]:
 	return _class_get_recursively(
