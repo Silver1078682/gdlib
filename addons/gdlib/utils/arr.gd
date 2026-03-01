@@ -2,7 +2,9 @@ class_name ArrUtil
 ## Provides a set of utility functions for working with arrays.
 
 const FOUR_DIRECTIONS_2D = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
-const SIX_DIRECTIONS_3D = [Vector3i.LEFT, Vector3i.RIGHT, Vector3i.UP, Vector3i.DOWN, Vector3i.FORWARD, Vector3i.BACK]
+const SIX_DIRECTIONS_3D = [
+	Vector3i.LEFT, Vector3i.RIGHT, Vector3i.UP, Vector3i.DOWN, Vector3i.FORWARD, Vector3i.BACK
+]
 
 
 ## Returns the sum of an array
@@ -30,7 +32,7 @@ static func repeat(arr: Array, count: int) -> Variant:
 
 ## Drops duplicate elements in an array, using dictionary.
 static func unique(arr: Array) -> Array:
-	var dict := { }
+	var dict := {}
 	for i in arr:
 		dict[i] = null
 	return dict.keys()
@@ -79,7 +81,7 @@ static func matrix(size: Array, default: Variant, typed_arr: Array = []) -> Arra
 		push_error("A matrix must be at least 2 dimensional")
 		return [[]]
 	size = Array(size, TYPE_INT, "", null)
-	var one := typed_arr.duplicate() # Yes, it's okay to pass a non-empty array, but considering performance, just don't do that.
+	var one := typed_arr.duplicate()  # Yes, it's okay to pass a non-empty array, but considering performance, just don't do that.
 	one.resize(size[0])
 	one.fill(default)
 	var empty: Array[Array] = []

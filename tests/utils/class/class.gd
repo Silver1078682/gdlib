@@ -2,7 +2,7 @@ extends GutTest
 
 const __ClassTestUnnamedScript__ = preload("uid://cswlfufiy0n3u")
 
-var node2d = ["Node2D",Node2D, Node2D.new()]
+var node2d = ["Node2D", Node2D, Node2D.new()]
 var base = [__ClassTestScriptBase__, "__ClassTestScriptBase__"]
 var test = [__ClassTestScript__, "__ClassTestScript__", __ClassTestScript__.new()]
 var unnamed = [__ClassTestUnnamedScript__, __ClassTestUnnamedScript__.new()]
@@ -54,7 +54,7 @@ func test_can_class_instantiate() -> void:
 func test_class_call_static() -> void:
 	DirAccess.open("res://tests/non-existent-test")
 	assert_eq(ClassUtil.class_call_static("DirAccess", &"get_open_error"), ERR_INVALID_PARAMETER)
-	ClassUtil.class_call_static("Engine", &"is_editor_hint") #This is not a static function
+	ClassUtil.class_call_static("Engine", &"is_editor_hint")  #This is not a static function
 	assert_engine_error_count(1)
 
 	for i in base:
@@ -82,16 +82,21 @@ func test_class_get_constant_names() -> void:
 	var d = ClassUtil.class_get_constant_names("__ClassTestScriptBase__")
 	var e = ClassUtil.class_get_constant_names("__ClassTestScript__")
 
-	var o = ClassDB.class_get_enum_list("Object") + ClassDB.class_get_integer_constant_list("Object")
-	var n = ClassDB.class_get_enum_list("Node", true) + ClassDB.class_get_integer_constant_list("Node", true)
+	var o = (
+		ClassDB.class_get_enum_list("Object") + ClassDB.class_get_integer_constant_list("Object")
+	)
+	var n = (
+		ClassDB.class_get_enum_list("Node", true)
+		+ ClassDB.class_get_integer_constant_list("Node", true)
+	)
 	var dd = PackedStringArray((__ClassTestScriptBase__ as Script).get_script_constant_map().keys())
 	var ee = PackedStringArray((__ClassTestScript__ as Script).get_script_constant_map().keys())
 
 	assert_arr_eq(a, o)
 	assert_arr_eq(b, o)
-	assert_arr_eq(c, (n + o))
-	assert_arr_eq(d, (dd + n + o))
-	assert_arr_eq(e, (ee + dd + n + o))
+	assert_arr_eq(c, n + o)
+	assert_arr_eq(d, dd + n + o)
+	assert_arr_eq(e, ee + dd + n + o)
 
 	a = ClassUtil.class_get_constant_names("Object", true)
 	b = ClassUtil.class_get_constant_names("ClassUtil", true)

@@ -8,8 +8,8 @@ extends __ClassTestScriptBase__
 var a1 = 5
 var s1 = "Hello"
 var arr1 = [1, 2, 3]
-var dict1 = { "key": "value", 2: 3 }
-var other_dict1 = { key = "value", other_key = 2 }
+var dict1 = {"key": "value", 2: 3}
+var other_dict1 = {key = "value", other_key = 2}
 var typed_var1: int
 var inferred_type1 := "String"
 

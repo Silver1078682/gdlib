@@ -1,5 +1,6 @@
 extends GutTest
 
+
 func test_rect2():
 	var rects = [
 		Rect2(Vector2(0, 0), Vector2(100, 200)),
@@ -66,9 +67,13 @@ func test_between():
 	var result = RandUtil.between(0, 10)
 	assert_true(result >= 0 and result <= 10, "Result not between the given values")
 	result = RandUtil.between(-5, 5)
-	assert_true(result >= -5 and result <= 5, "Result not between the given values with negative range")
+	assert_true(
+		result >= -5 and result <= 5, "Result not between the given values with negative range"
+	)
 	result = RandUtil.between(Vector3.ZERO, Vector3.ONE)
-	assert_true((result.x == result.y) and (result.x == result.z) and result.x >= 0 and result.x <= 1)
+	assert_true(
+		(result.x == result.y) and (result.x == result.z) and result.x >= 0 and result.x <= 1
+	)
 	result = RandUtil.between(0, 0)
 	assert_true(result == 0, "Result not equal to the given value when both values are equal")
 
@@ -115,6 +120,7 @@ func _test_shuffle_bag(list: Array) -> void:
 	k.sort()
 	assert_eq(k, list)
 
+
 func test_bs_wrs() -> void:
 	var bs = RandUtil.bs_wrs({"abc": 2, "def": 3})
 	var abc_count := 0
@@ -150,9 +156,9 @@ func test_alias_wrs() -> void:
 
 
 func test_ares_wrs() -> void:
-	var dict := {a=10, b=5, c=3, d=2}
+	var dict := {a = 10, b = 5, c = 3, d = 2}
 	var item_count := dict.size()
-	
+
 	var unchosen := dict.duplicate()
 	var a_res = RandUtil.ares_wrs(dict)
 
@@ -163,12 +169,11 @@ func test_ares_wrs() -> void:
 	for i in 5:
 		var choice := a_res.pop(i)
 		assert_eq(choice, [])
-	
-	
-	var count : Array[Dictionary] = []
+
+	var count: Array[Dictionary] = []
 	count.resize(item_count)
 	for i in item_count:
-		count[i] = {a=0, b=0, c=0, d=0}
+		count[i] = {a = 0, b = 0, c = 0, d = 0}
 	var count2 = count.duplicate_deep()
 
 	var c := 50000
@@ -180,7 +185,6 @@ func test_ares_wrs() -> void:
 
 	for item in dict:
 		assert_almost_eq(count[0][item] / float(c), dict[item] / 20.0, 0.01)
-	
 
 	for i in c:
 		a_res.assign(dict)
@@ -189,10 +193,10 @@ func test_ares_wrs() -> void:
 			count2[j][choice[j]] += 1
 	for j in 4:
 		for item in dict:
-			assert_almost_eq(count[j][item] / float(c), count2[j][item] / float(c), 0.01) ## Should have silmilar result
+			assert_almost_eq(count[j][item] / float(c), count2[j][item] / float(c), 0.01)  ## Should have silmilar result
 
 	for i in 10:
-		a_res.assign({a=0, b=2, c=3, d=4})
+		a_res.assign({a = 0, b = 2, c = 3, d = 4})
 		var pop3 := PackedStringArray(a_res.pop(3))
 		pop3.sort()
 		assert_eq(pop3, PackedStringArray(["b", "c", "d"]))
