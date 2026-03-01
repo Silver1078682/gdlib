@@ -62,7 +62,8 @@ static func free_children(parent: Node) -> void:
 static func ensure_children_freed(node: Node) -> void:
 	for child in node.get_children():
 		if not child.is_queued_for_deletion():
-			push_error("ensure_children_freed is called on a node, but queued_free never call on its child %s" % child)
+			push_error("ensure_children_freed is called on a node, but queued_free not called or cancelled on its child %s" % child)
+			return
 		await child.tree_exited
 
 
@@ -76,8 +77,8 @@ static func get_descendants(node: Node, include_internal: bool = false) -> Array
 
 
 ## Constrain the children of node to a specific type. [br]
+## If a children of a type that is not desired is added as its child, push an error. [br]
 ## The restriction will [b]continue[/b] to apply until the node exits scene tree.
-## If a children of a type that is not desired is added as its child, push an error.
 static func assert_children_type(node: Node, type: Variant):
 	_ChildrenTypeAsserter.new(node, type)
 

@@ -9,6 +9,7 @@ var conflict: Node
 
 
 func before_all():
+	GutTestHelper.coverage(NodeUtil, self )
 	var window := get_node("/root")
 	var test_root := Node.new()
 	test_root.name = "Test"
@@ -145,17 +146,26 @@ func test_free_children() -> void:
 	await NodeUtil.ensure_children_freed(root)
 	assert_eq(root.get_child_count(), 0)
 
+func test_ensure_children_freed() -> void:
+	await NodeUtil.ensure_children_freed(root)
+	assert_push_error("not called")
+	sibling.add_child(Node.new())
+	sibling.get_child(0).queue_free()
+	assert_true(sibling.get_child(0).is_queued_for_deletion())
+	await NodeUtil.ensure_children_freed(sibling)
+	assert_eq(sibling.get_child_count(), 0)
 
-func test_constrain_children_type() -> void:
+
+func test_assert_children_type() -> void:
 	NodeUtil.assert_children_type(child, Node2D)
 	assert_push_error_count(1) # conflict is not Node2D
-	child.add_child(Control.new()) 
+	child.add_child(Control.new())
 	assert_push_error_count(2)
-	grandchild.add_child(Node.new()) #grandchild does not trigger asserter
+	grandchild.add_child(Node.new()) # grandchild does not trigger asserter
 	assert_push_error_count(2)
 
 	assert_true(child.child_entered_tree.get_connections().size() == 1)
-	var callable : Callable= child.child_entered_tree.get_connections()[0]["callable"]
+	var callable: Callable = child.child_entered_tree.get_connections()[0]["callable"]
 	var object := callable.get_object()
 	assert_true(object is NodeUtil._ChildrenTypeAsserter)
 	
@@ -175,3 +185,12 @@ func test_constrain_children_type() -> void:
 	child.queue_free()
 	await child.tree_exited
 	assert_false(is_instance_valid(object))
+	
+	NodeUtil.assert_children_type(sibling, Node2D)
+	callable = sibling.child_entered_tree.get_connections()[0]["callable"]
+	object = callable.get_object()
+	sibling.free()
+	assert_false(is_instance_valid(object))
+	
+	
+	
