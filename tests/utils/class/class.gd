@@ -33,6 +33,16 @@ func test_query_class() -> void:
 	for i in undefined:
 		assert_null(ClassUtil.query_class(i))
 
+func test_inherits_from() -> void:
+	assert_true(ClassUtil.inherits_from(ClassUtil, "Object"))
+	assert_false(ClassUtil.inherits_from(Object, "ClassUtil"))
+	assert_true(ClassUtil.inherits_from(Node.new(), "Object"))
+	assert_true(ClassUtil.inherits_from(Node.new(), "Node"))
+
+	assert_true(ClassUtil.inherits_from(__ClassTestScript__.new(), "Node"))
+	assert_true(ClassUtil.inherits_from(__ClassTestScript__.new(), Node))
+	for i in base + test:
+		assert_true(ClassUtil.inherits_from(__ClassTestScript__.new(), i))
 
 func test_class_exists() -> void:
 	for i in node2d + base + test + unnamed + unnamed_child:

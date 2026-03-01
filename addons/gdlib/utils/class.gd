@@ -19,7 +19,6 @@ class_name ClassUtil
 ## [b]Note[/b]: non-Object Variant like int, String and Array is not managed by ClassUtil[br]
 ## [b]Note[/b]: GDExtension should be a part of ClassDB, but they have not been tested
 
-
 # Returns the names of all engine classes available.
 static func get_class_list() -> PackedStringArray:
 	return (
@@ -27,9 +26,20 @@ static func get_class_list() -> PackedStringArray:
 		+ PackedStringArray(
 			ProjectSettings.get_global_class_list().map(
 				func(class_info): return class_info["class"]
-			)
+			),
 		)
 	)
+
+
+## Returns true if the object inherits from the given class. See also get_class().
+static func inherits_from(object: Object, class_id: Variant) -> bool:
+	var result = query_class(class_id)
+	if result is StringName:
+		return object.is_class(result)
+	if result is Script:
+		return is_instance_of(object, result)
+	push_warning("Invalid class ID provided")
+	return false
 
 
 ## Returns whether the specified class with [param name] is available or not.
@@ -52,7 +62,8 @@ static func can_class_instantiate(class_id: Variant) -> bool:
 ## Calls a static method on a class.
 ## Due to the restriction, class without a global name does not work with this function
 static func class_call_static(
-	class_id: Variant, method_name: StringName, ...args: Array
+		class_id: Variant,
+		method_name: StringName, ...args: Array
 ) -> Variant:
 	var result = query_class(class_id)
 	if result is StringName:
@@ -81,8 +92,8 @@ static func class_get_api_type(class_id: Variant) -> ClassDB.APIType:
 
 ## Returns an array with all the keys in enum of class or its ancestry.
 static func class_get_constant_names(
-	class_id: Variant,
-	no_inheritance: bool = false,
+		class_id: Variant,
+		no_inheritance: bool = false,
 ) -> PackedStringArray:
 	return _class_get_recursively(
 		class_id,
@@ -111,7 +122,8 @@ static func class_get_constant_names(
 ## Note: In exported release builds the debug info from ClassDB is not available,
 ## so the returned dictionaries will contain only method names.
 static func class_get_method_list(
-	class_id: Variant, no_inheritance: bool = false
+		class_id: Variant,
+		no_inheritance: bool = false,
 ) -> Array[Dictionary]:
 	return _class_get_recursively(
 		class_id,
@@ -145,7 +157,8 @@ static func class_get_property_default_value(class_id: Variant, property: String
 ## - [code]usage[/code] is a combination of PropertyUsageFlags.[br]
 ## Note: In GDScript, all class members are treated as properties. In C# and GDExtension, it may be necessary to explicitly mark class members as Godot properties using decorators or attributes.
 static func class_get_property_list(
-	class_id: Variant, no_inheritance: bool = false
+		class_id: Variant,
+		no_inheritance: bool = false,
 ) -> Array[Dictionary]:
 	return _class_get_recursively(
 		class_id,
@@ -160,7 +173,8 @@ static func class_get_property_list(
 ## Returns the list of existing signals as an Array of Dictionaries, or its ancestry if no_inheritance is false.
 ## Every element of the array is a Dictionary as described in [method class_get_signal()].
 static func class_get_signal_list(
-	class_id: Variant, no_inheritance: bool = false
+		class_id: Variant,
+		no_inheritance: bool = false,
 ) -> Array[Dictionary]:
 	return _class_get_recursively(
 		class_id,
@@ -172,7 +186,7 @@ static func class_get_signal_list(
 	)
 
 
-## Returns the parent class name of [param class_id] as a StringName, 
+## Returns the parent class name of [param class_id] as a StringName,
 ## If no parent exists or parent class does not have a global name, an empty StringName is returned.
 static func get_parent_class(class_id: Variant) -> StringName:
 	var result = query_class(class_id)
@@ -186,6 +200,7 @@ static func get_parent_class(class_id: Variant) -> StringName:
 		return script.get_instance_base_type()
 	push_warning("Invalid class ID provided")
 	return ""
+
 
 ## Returns all the ancestry classes of [param class_id] as a PackedStringArray.
 ## The list is sorted from the base class(i.e. Object) to the most derived class.
@@ -206,6 +221,7 @@ static func get_ancestry_classes(class_id: Variant) -> PackedStringArray:
 	push_warning("Invalid class ID provided")
 	return []
 
+
 ## Creates an instance of class.
 static func instantiate(class_id: Variant) -> Variant:
 	var result = query_class(class_id)
@@ -219,12 +235,12 @@ static func instantiate(class_id: Variant) -> Variant:
 
 
 static func _class_get_recursively(
-	class_id: Variant,
-	class_db_method: Callable,
-	custom_script_method: Callable,
-	reduce_method: Callable,
-	no_inheritance: bool,
-	fallback = [],
+		class_id: Variant,
+		class_db_method: Callable,
+		custom_script_method: Callable,
+		reduce_method: Callable,
+		no_inheritance: bool,
+		fallback = [],
 ) -> Variant:
 	var result = query_class(class_id)
 	if result is StringName:
@@ -240,10 +256,12 @@ static func _class_get_recursively(
 			script = parent
 			parent = parent.get_base_script()
 			accumulated_result = reduce_method.call(
-				accumulated_result, custom_script_method.call(script)
+				accumulated_result,
+				custom_script_method.call(script),
 			)
 		return reduce_method.call(
-			accumulated_result, class_db_method.call(script.get_instance_base_type())
+			accumulated_result,
+			class_db_method.call(script.get_instance_base_type()),
 		)
 
 	push_warning("Invalid class ID provided")
@@ -285,9 +303,7 @@ static var _virtual_object := RefCounted.new()
 
 static func _static_init() -> void:
 	var class_list := (
-		Array(ClassDB.get_class_list())
-		.filter(func(name): return ClassDB.can_instantiate(name))
-		.map(func(name): return name + ': &"%s"' % name)
+		Array(ClassDB.get_class_list()).filter(func(name): return ClassDB.can_instantiate(name)).map(func(name): return name + ': &"%s"' % name)
 	) # Node = &"Node"
 	_VirtualScript.source_code = "extends RefCounted\nvar classes = {" + ",".join(class_list) + "}"
 	_VirtualScript.reload()
