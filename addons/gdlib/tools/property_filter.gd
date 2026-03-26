@@ -36,13 +36,13 @@ func filter_on(object: Object) -> PackedStringArray:
 				return match_regex(pattern, prop_info.name)
 		):
 			continue
-
+		
 		if declare_whitelist:
 			if (prop_info.name not in declare_filter_list):
 				continue
 		elif (prop_info.name in declare_filter_list):
 			continue
-
+		
 		if prop_info.type == TYPE_OBJECT:
 			if not match_rule(
 				extends_whitelist,
@@ -57,20 +57,20 @@ func filter_on(object: Object) -> PackedStringArray:
 
 
 func parse_declare_filter(object: Object) -> Dictionary:
-	var class_name_list := { }
-	var result := { }
+	var class_name_list := {}
+	var result := {}
 	var _parse_list = func(list: PackedStringArray, method: Callable):
 		for i in list:
 			var ancestry := false
 			if i.begins_with("+"):
-				i = i.trim_suffix("+")
+				i = i.trim_prefix("+")
 				ancestry = true
-			if object.is_class(i):
+			if not ClassUtil.inherits_from(object, i):
 				continue
 			method.call(i)
 			if ancestry:
 				for ancestor in ClassUtil.get_ancestry_classes(i):
-					method.call(i)
+					method.call(ancestor)
 	if declare_whitelist:
 		_parse_list.call(declare_whitelist, Callable.create(class_name_list, "set").bind(null))
 		_parse_list.call(declare_blacklist, Callable.create(class_name_list, "erase"))
@@ -82,7 +82,6 @@ func parse_declare_filter(object: Object) -> Dictionary:
 			result[prop_info.name] = null
 	return result
 
-
 func match_rule(whitelist: Array, blacklist: Array, prop_info: Dictionary, method: Callable) -> bool:
 	if whitelist:
 		for element in whitelist:
@@ -92,7 +91,6 @@ func match_rule(whitelist: Array, blacklist: Array, prop_info: Dictionary, metho
 		if method.call(element, prop_info):
 			return false
 	return true
-
 
 func match_regex(pattern: String, subject: String):
 	return RegEx.create_from_string(pattern).search(subject) != null

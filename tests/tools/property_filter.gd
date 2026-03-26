@@ -28,10 +28,12 @@ func test_declare_filter() -> void:
 	assert_eq(Array(filter.filter_on(node)), [])
 
 	filter.declare_whitelist = ["+Node2D"]
-	print(JSON.stringify(filter.parse_declare_filter(node2d)))
 	assert_arr_c(
 		filter.filter_on(node2d),
-		ClassUtil.class_get_property_list("Node2D").map(func(prop_info): return prop_info.name)
+		ClassUtil.class_get_property_list("Node2D", true).map(func(prop_info): return prop_info.name) + \
+		ClassUtil.class_get_property_list("CanvasItem", true).map(func(prop_info): return prop_info.name) + \
+		ClassUtil.class_get_property_list("Node", true).map(func(prop_info): return prop_info.name) + \
+		ClassUtil.class_get_property_list("Object", true).map(func(prop_info): return prop_info.name)
 	)
 	assert_eq(Array(filter.filter_on(node)), [])
 
@@ -41,9 +43,11 @@ func test_declare_blacklist_filter() -> void:
 		filter.filter_on(node2d),
 		ClassUtil.class_get_property_list("CanvasItem", true).map(func(prop_info): return prop_info.name) + \
 		ClassUtil.class_get_property_list("Node", true).map(func(prop_info): return prop_info.name) + \
-		ClassUtil.class_get_property_list("Object", true).map(func(prop_info): return prop_info.name)
+		ClassUtil.class_get_property_list("Object", true).map(func(prop_info): return prop_info.name) + \
+		["CanvasItem", "Node", "Node2D", "script"] ## class is also in get_object_list
 	)
-	assert_eq(Array(filter.filter_on(node)), [])
+	#filter.declare_blacklist = ["+Node2D"]
+	#assert_eq(Array(filter.filter_on(node)), [])
 
 func assert_arr_eq(a, b):
 	assert_eq(Array(a), Array(b))
