@@ -106,6 +106,7 @@ static func class_get_constant_names(
 			return PackedStringArray(script.get_script_constant_map().keys()),
 		func(a: PackedStringArray, b: PackedStringArray) -> PackedStringArray: return a + b,
 		no_inheritance,
+		[]
 	)
 
 
@@ -125,7 +126,7 @@ static func class_get_method_list(
 		class_id: Variant,
 		no_inheritance: bool = false,
 ) -> Array[Dictionary]:
-	return _class_get_recursively(
+	return _class_get_recursively_type_list(
 		class_id,
 		func(db_name: StringName) -> Array[Dictionary]:
 			return ClassDB.class_get_method_list(db_name),
@@ -160,7 +161,7 @@ static func class_get_property_list(
 		class_id: Variant,
 		no_inheritance: bool = false,
 ) -> Array[Dictionary]:
-	return _class_get_recursively(
+	return _class_get_recursively_type_list(
 		class_id,
 		func(db_name: StringName) -> Array[Dictionary]:
 			return ClassDB.class_get_property_list(class_id, no_inheritance),
@@ -176,7 +177,7 @@ static func class_get_signal_list(
 		class_id: Variant,
 		no_inheritance: bool = false,
 ) -> Array[Dictionary]:
-	return _class_get_recursively(
+	return _class_get_recursively_type_list(
 		class_id,
 		func(db_name: StringName) -> Array[Dictionary]:
 			return ClassDB.class_get_signal_list(class_id, no_inheritance),
@@ -240,7 +241,7 @@ static func _class_get_recursively(
 		custom_script_method: Callable,
 		reduce_method: Callable,
 		no_inheritance: bool,
-		fallback = [],
+		fallback: Variant,
 ) -> Variant:
 	var result = query_class(class_id)
 	if result is StringName:
@@ -267,6 +268,25 @@ static func _class_get_recursively(
 	push_warning("Invalid class ID provided")
 	return fallback
 
+
+static func _class_get_recursively_type_list(
+		class_id: Variant,
+		class_db_method: Callable,
+		custom_script_method: Callable,
+		reduce_method: Callable,
+		no_inheritance: bool,
+) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	result.assign(_class_get_recursively(
+		class_id,
+		class_db_method,
+		custom_script_method,
+		reduce_method,
+		no_inheritance,
+		[],
+		)
+	)
+	return result
 
 ## Query the type of a class by class_id.
 ## Class id can extends from String, Script or Object

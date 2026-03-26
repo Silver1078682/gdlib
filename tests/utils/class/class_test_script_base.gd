@@ -68,10 +68,3 @@ func something(p1, p2):
 # Inner class
 class Something:
 	var a = 10
-
-
-# Constructor
-func _init():
-	print("Constructed!")
-	var lv = Something.new()
-	print(lv.a)

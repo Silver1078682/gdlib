@@ -68,6 +68,4 @@ class SomethingElse:
 
 # Constructor
 func _init():
-	print("Constructed!")
-	var lv = Something.new()
-	print(lv.a)
+	pass
