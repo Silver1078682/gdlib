@@ -2,5 +2,8 @@
 
 [ext_resource type="Script" uid="uid://2px7mkqyklix" path="res://tests/utils/rand/wrs_benchmark.gd" id="1_tbhp7"]
 
-[node name="Wrs" type="Node" unique_id=1235594377]
+[node name="Wrs" type="Node2D" unique_id=1397044625]
 script = ExtResource("1_tbhp7")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1612325694]
+position = Vector2(192, -128)

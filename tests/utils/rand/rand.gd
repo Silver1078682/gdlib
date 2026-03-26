@@ -7,11 +7,15 @@ func test_rect2():
 		Rect2(Vector2(0, 0), Vector2(0, 0)),
 	]
 
-	for i in 10:
+	for i in 100:
 		for rect: Rect2 in rects:
 			var point = RandUtil.rect2(rect)
 			if rect.size:
-				assert_true(rect.abs().has_point(point))
+				rect = rect.abs()
+				assert_true(rect.position.x <= point.x)
+				assert_true(rect.end.x >= point.x)
+				assert_true(rect.position.y <= point.y)
+				assert_true(rect.end.y >= point.y)
 			else:
 				assert_eq(point, rect.position)
 
@@ -22,11 +26,15 @@ func test_rect2i():
 		Rect2i(Vector2i(-100, -100), Vector2i(100, 200)),
 		Rect2i(Vector2i(0, 0), Vector2i(0, 0)),
 	]
-	for i in 10:
+	for i in 100:
 		for rect: Rect2i in rects:
 			var point = RandUtil.rect2i(rect)
 			if rect.size:
-				assert_true(rect.abs().has_point(point))
+				rect = rect.abs()
+				assert_true(rect.position.x <= point.x)
+				assert_true(rect.end.x >= point.x)
+				assert_true(rect.position.y <= point.y)
+				assert_true(rect.end.y >= point.y)
 			else:
 				assert_eq(point, rect.position)
 
@@ -129,8 +137,8 @@ func test_bs_wrs() -> void:
 	var bs = RandUtil.bs_wrs({"abc": 2, "def": 3})
 	var abc_count := 0
 	var def_count := 0
-	var count = 1000.0
-	for i in range(count):
+	var test_count = 10000.0
+	for i in test_count:
 		var j = bs.pick()
 		if j == "abc":
 			abc_count += 1
@@ -138,16 +146,16 @@ func test_bs_wrs() -> void:
 			def_count += 1
 		else:
 			fail_test("Invalid result: %s" % j)
-	assert_almost_eq(abc_count / count, 2.0 / 5.0, 0.01)
-	assert_almost_eq(def_count / count, 3.0 / 5.0, 0.01)
+	assert_almost_eq(abc_count / test_count, 2.0 / 5.0, 0.01)
+	assert_almost_eq(def_count / test_count, 3.0 / 5.0, 0.01)
 
 
 func test_alias_wrs() -> void:
 	var alias = RandUtil.alias_wrs({"abc": 2, "def": 3})
 	var abc_count := 0
 	var def_count := 0
-	var count = 1000.0
-	for i in range(count):
+	var test_count = 10000.0
+	for i in test_count:
 		var j = alias.pick()
 		if j == "abc":
 			abc_count += 1
@@ -155,8 +163,8 @@ func test_alias_wrs() -> void:
 			def_count += 1
 		else:
 			fail_test("Invalid result: %s" % j)
-	assert_almost_eq(abc_count / count, 2.0 / 5.0, 0.01)
-	assert_almost_eq(def_count / count, 3.0 / 5.0, 0.01)
+	assert_almost_eq(abc_count / test_count, 2.0 / 5.0, 0.01)
+	assert_almost_eq(def_count / test_count, 3.0 / 5.0, 0.01)
 
 
 func test_ares_wrs() -> void:
@@ -181,25 +189,25 @@ func test_ares_wrs() -> void:
 		count[i] = {a=0, b=0, c=0, d=0}
 	var count2 = count.duplicate_deep()
 
-	var c := 50000
-	for i in c:
+	var test_count := 50000.0
+	for i in test_count:
 		a_res.assign(dict)
 		for j in 4:
 			var choice = a_res.pop()[0]
 			count[j][choice] += 1
 
 	for item in dict:
-		assert_almost_eq(count[0][item] / float(c), dict[item] / 20.0, 0.01)
+		assert_almost_eq(count[0][item] / test_count, dict[item] / 20.0, 0.01)
 	
 
-	for i in c:
+	for i in test_count:
 		a_res.assign(dict)
 		var choice = a_res.pop(4)
 		for j in 4:
 			count2[j][choice[j]] += 1
 	for j in 4:
 		for item in dict:
-			assert_almost_eq(count[j][item] / float(c), count2[j][item] / float(c), 0.01) ## Should have silmilar result
+			assert_almost_eq(count[j][item] / test_count, count2[j][item] / test_count, 0.01) ## Should have silmilar result
 
 	for i in 10:
 		a_res.assign({a=0, b=2, c=3, d=4})
