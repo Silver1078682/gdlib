@@ -2,24 +2,31 @@ class_name SearchBar
 extends LineEdit
 ## A simple search bar implementation that search(filter and resort) children of a target parent
 ##
-## [b]NOTE[/b]: to make the search bar works, yuo should implement the [method _should_filter]
+## [b]NOTE[/b]: to make a search bar works, you should set [member target_parent] manually[br]
+## You should also implement search logic yourself.[br]
+## Please override method [method _should_match] and [method _sort]
 ## [codeblock]
 ## func _should_match(a : Node) -> bool:
 ## 	if a is Label:
+## 		# filter labels by their content
 ## 		return a.text.containsn(text) or text.is_empty()
-## 	return false # filter labels by their content
+## 	return false
+##
+## func _sort(a: Node, b: Node) -> bool:
+## 	return a.text < b.text
+##
 ## [/codeblock]
 
 ## The target parent whose children will be searched
 @export var target_parent: Node
 ## Whether to sort children after filtering. See also [method _sort]
-@export var custom_sort := false
+@export var custom_sort := true
 
 #region custom behavior
 ## Override this function to define custom filter logic
 ## Implement this function to make sure the SearchBar works as expected
 func _should_match(a: Node) -> bool:
-	return false
+	return a.name.contains(text)
 
 
 ## Custom logic to sort the order node was arranged
@@ -43,10 +50,10 @@ func _on_matched(a: Node) -> void:
 func search():
 	if can_record_history:
 		add_history(text)
-
 	if not target_parent:
 		push_error("Target parent not set. Please set target_parent for SearchBar")
 		return
+
 	var filtered := target_parent.get_children().filter(_should_match)
 	filtered.map(_on_matched)
 	if custom_sort:
@@ -80,7 +87,7 @@ signal history_navigated
 		)
 		max_history_count = p_max_history_count
 
-# circular queue of search history.
+# search history.
 var _history_list: PackedStringArray
 
 
@@ -97,7 +104,7 @@ func add_history(text: String) -> void:
 		_history_list.remove_at(0)
 	_history_list.append(text)
 
-
+# index pointer to thw history we are currently at.
 var _history_pointer := -1
 
 
