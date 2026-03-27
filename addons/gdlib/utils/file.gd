@@ -7,12 +7,7 @@ static func open_file(path: String, access_mode: FileAccess.ModeFlags) -> FileAc
 	var file = FileAccess.open(path, access_mode)
 	var error := FileAccess.get_open_error()
 	if error:
-		printerr(
-			(
-				"opening file at %s failed: " % ProjectSettings.globalize_path(path)
-				+ error_string(error)
-			)
-		)
+		_print_open_error(error, "opening file at %s failed: ", path)
 	return file
 
 
@@ -23,24 +18,14 @@ static func open_dir(path: String, force := false) -> DirAccess:
 	if force and not DirAccess.dir_exists_absolute(path):
 		error = DirAccess.make_dir_recursive_absolute(path)
 		if error:
-			printerr(
-				(
-					"creating directory at %s failed: " % ProjectSettings.globalize_path(path)
-					+ error_string(error)
-				)
-			)
+			_print_open_error(error, "opening directory at %s failed: ", path)
 			return
 		return open_dir(path, true)
 
 	var dir = DirAccess.open(path)
 	error = DirAccess.get_open_error()
 	if error:
-		printerr(
-			(
-				"opening directory at %s failed: " % ProjectSettings.globalize_path(path)
-				+ error_string(error)
-			)
-		)
+		_print_open_error(error, "opening directory at %s failed: ", path)
 	return dir
 
 
@@ -61,9 +46,10 @@ static func clear_dir(dir: DirAccess, recursive := true) -> void:
 ## An iterator for files in a folder
 ## [codeblock]
 ## var dir = FileUtil.open_dir("res://folder")
-## for file in FileStream(dir):
-##     pass
+## for file in FileUtil.FileStream(dir):
+##     pass # do something here
 ## [/codeblock]
+## [b]NOTE[/b]: The order is undefined
 class FileStream:
 	var _dir: DirAccess
 
@@ -79,7 +65,7 @@ class FileStream:
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
 
-	func _iter_get(iter: Variant) -> Variant:
+	func _iter_get(iter: Variant) -> String:
 		return iter
 
 
@@ -99,3 +85,7 @@ static func preload_resources(folder_path: String, type_hint: String = "") -> Di
 			if resource:
 				result[file_name.rsplit(".", 1)[0]] = resource
 	return result
+	
+
+static func _print_open_error(error: Error, message :String, path: String) -> void:
+	push_error("opening file at %s failed: " % ProjectSettings.globalize_path(path)+ error_string(error))

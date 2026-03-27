@@ -59,7 +59,7 @@ static func free_children(parent: Node) -> void:
 
 ## Ensure the children of a node is all freed.
 ## await is required before this function.
-## You can use if after [method free_children] when it's necessary
+## You can use it after [method free_children] immediately when necessary
 static func ensure_children_freed(node: Node) -> void:
 	for child in node.get_children():
 		if not child.is_queued_for_deletion():

@@ -175,10 +175,10 @@ class BinarySearchWRS:
 
 
 ## Returns a Weighted Random Sampler based on A Res.
-## Used for multiple sampling without replacement.[br]
+## Used for multiple sampling [b]without[\b] replacement.[br]
 ## The [param dict] should look like {item: weight}[br]
 ## [codeblock]
-## var a_res := RandUtil.ares_wrs({a=10, b=2, c=3, d=4}.duplicate())
+## var a_res := RandUtil.ares_wrs({a=10, b=2, c=3, d=4})
 ## for i in 5:
 ## 	print(a_res.pop())
 ## # [&"c"]
@@ -229,6 +229,16 @@ class AResWRS:
 ## The [param dict] should look like {item: weight}[br]
 ## Call [method assign] on it to reload a dictionary.
 ## Call [method pick] on it to get the an item.[br]
+## [codeblock]
+## var alias := RandUtil.alias_wrs({a=10, b=5, c=3, d=0})
+## for i in 5:
+## 	print(alias.pick())
+## # &"c"
+## # &"a"
+## # &"a"
+## # &"b"
+## # &"a"
+## [/codeblock]
 static func alias_wrs(dict: Dictionary) -> AliasWRS:
 	var rng := AliasWRS.new()
 	rng.assign(dict)
@@ -280,58 +290,3 @@ class AliasWRS:
 			else:
 				_small.append([large_info[0], restArea])
 		alias_table.append(_large if _large else _small)
-
-
-#class AliasWRS:
-	#extends RefCounted
-	#var _items: Dictionary
-	#var alias_table: Array[Array] = []
-	##var _small: Array[Array] = []
-	##var _large: Array[Array] = []
-	#var _small_items: Array[Variant] = []
-	#var _small_areas: Array[float] = []
-	#var _large_items: Array[Variant] = []
-	#var _large_areas: Array[float] = []
-#
-	#func assign(dict: Dictionary) -> void:
-		#_items = dict
-		#_init_queue()
-		#_construct_alias_table()
-#
-	#func pick() -> Variant:
-		#var area: Array = alias_table.pick_random()
-		#var rand := randf()
-		#if rand < area[0][1]:
-			#return area[0][0]
-		#else:
-			#return area[1][0]
-#
-	#func _init_queue():
-		#var sum: float = _items.values().reduce(func(a, b): return a + b)
-		#var total := _items.size()
-		#for item in _items:
-			#var weight: float = _items[item]
-			#var area := (weight / sum) * total
-			#if area > 1:
-				#_large_areas.append(area)
-				#_large_items.append(item)
-			#else:
-				#_small_areas.append(area)
-				#_small_items.append(item)
-#
-	#func _construct_alias_table():
-		#while _large_items and _small_items:
-			#var large_area = _large_areas.pop_back()
-			#var large_item = _large_items.pop_back()
-			#var small_area = _small_areas.pop_back()
-			#var small_item = _small_items.pop_back()
-			#var restArea: float = large_area - (1 - small_area)
-			#alias_table.append([[large_item, 1 - small_area], [small_item, small_area]])
-			#if restArea > 1:
-				#_large_items.append(large_item)
-				#_large_areas.append(restArea)
-			#else:
-				#_small_items.append(small_item)
-				#_small_areas.append(restArea)
-		#alias_table.append([[(_large_items if _large_items else _small_items)[0], 10],[]]) 
-		#print(alias_table)

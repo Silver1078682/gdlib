@@ -11,7 +11,7 @@ extends RefCounted
 ## You can also pass an initial array to the constructor to initialize the queue from an array
 ## [codeblock]
 ## var queue := CircularQueue.new(3, [1, 2, 3])
-## var typed_arr : Array[int]
+## var typed_arr: Array[int]
 ## var typed_queue := CircularQueue.new(3, typed_arr) # Initialize queue with typed array
 ## queue.push_back("string")
 ## typed_queue.push_back("string, but in a 'typed queue'") # Raises an error
