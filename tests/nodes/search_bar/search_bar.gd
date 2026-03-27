@@ -7,28 +7,37 @@ const LABEL_COUNT = 10
 
 func before_all():
 	var window := get_node("/root")
-	var test_root := Node.new()
-	test_root.name = "Test"
-	window.add_child(test_root)
-	root = test_root
+	root = Node.new()
+	root.name = "Test"
+	window.add_child(root)
 
 
 func before_each():
+	NodeUtil.free_children(root)
+	await NodeUtil.ensure_children_freed(root)
 	target = Node2D.new()
 	root.add_child(target)
 	# Create test labels
 	for i in range(LABEL_COUNT):
 		var label := Label.new()
 		label.text = str(i)
-		target.add_child(label)
+		label.name = "Label" + str(i)
+		target.add_child(label, true)
 
 
 class CustomSearchBar extends SearchBar:
-	## Override the default filter logic
+	var search_cnt := 0
+	func search():
+		search_cnt += 1
+		super()
+
 	func _should_match(a: Node) -> bool:
-		if a is Label and text in (a.text as String).to_lower():
-			return true
+		if a is Label:
+			return a.text.containsn(text) or text.is_empty()
 		return false
+
+	func _sort(a: Node, b: Node) -> bool:
+		return (a as Label).text > (b as Label).text
 
 
 ## Test the filter functionality
@@ -39,28 +48,30 @@ func test_filter() -> void:
 	# Test with a matching keyword
 	search_bar.text = "5"
 	search_bar.search()
+	_assert_only_label_n_is_visible(5)
 
-	# Verify only node 5 is visible
-	for i in range(LABEL_COUNT):
+## Test the sort functionality
+func test_sort() -> void:
+	var search_bar := CustomSearchBar.new()
+	search_bar.target_parent = target
+	search_bar.text = ""
+	search_bar.search()
+	for i in target.get_child_count():
 		var node := target.get_child(i)
-		if i == 5:
-			assert_true(node.visible, "Node 5 should be visible")
-		else:
-			assert_false(node.visible, "Node #%d should be hidden" % i)
-
+		assert_true(node.name.ends_with(str(LABEL_COUNT - i - 1)))
+		assert_true(node.visible)
 
 ## Test on_submitted functionality
 func test_on_submitted():
 	var search_bar := CustomSearchBar.new()
+	assert_eq(search_bar.search_cnt, 0)
 	search_bar.target_parent = target
-	search_bar.text_submitted.emit("5")
-	# Verify only node 5 is visible
-	for i in range(LABEL_COUNT):
-		var node := target.get_child(i)
-		if i == 5:
-			assert_true(node.visible, "Node 5 should be visible")
-		else:
-			assert_false(node.visible, "Node #%d should be hidden" % i)
+	search_bar.text = "5"
+	search_bar.text_submitted.emit(search_bar.text)
+	assert_eq(search_bar.search_cnt, 1)
+	_assert_only_label_n_is_visible(5)
+
+
 
 
 ## Test search history functionality
@@ -140,3 +151,12 @@ func _search(search_bar: SearchBar, search: String, arr = null):
 	search_bar.search()
 	if arr != null:
 		arr.append(search)
+
+func _assert_only_label_n_is_visible(n: int):
+	for i in range(LABEL_COUNT):
+		var node := target.get_child(i)
+		if node.name.ends_with(str(n)):
+			assert_true(node.visible, "Label%d should be visible" % n)
+			assert_true(i == 0, "Label%d should be first node" % n)
+		else:
+			assert_false(node.visible, "Node #%d should be hidden" % i)
