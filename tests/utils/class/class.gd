@@ -15,7 +15,8 @@ var undefined = ["__NonExistentClass__", "__ClassTestUnnamedScript__"]
 
 
 func before_all():
-	GutTestHelper.coverage(ClassUtil, self )
+	GutTestHelper.coverage(ClassUtil, self)
+
 
 func test_get_class_list() -> void:
 	var class_list = ClassUtil.get_class_list()
@@ -23,6 +24,7 @@ func test_get_class_list() -> void:
 		assert_true(i in class_list)
 	for i in ProjectSettings.get_global_class_list():
 		assert_true(i["class"] in class_list)
+
 
 func test_query_class() -> void:
 	assert_true(ClassUtil.query_class("ClassUtil") is Script)
@@ -32,6 +34,7 @@ func test_query_class() -> void:
 		assert_true(ClassUtil.query_class(i) is Script)
 	for i in undefined:
 		assert_null(ClassUtil.query_class(i))
+
 
 func test_inherits_from() -> void:
 	assert_true(ClassUtil.inherits_from(ClassUtil, "Object"))
@@ -44,11 +47,13 @@ func test_inherits_from() -> void:
 	for i in base + test:
 		assert_true(ClassUtil.inherits_from(__ClassTestScript__.new(), i))
 
+
 func test_class_exists() -> void:
 	for i in node2d + base + test + unnamed + unnamed_child:
 		assert_true(ClassUtil.class_exists(i))
 	for i in undefined:
 		assert_false(ClassUtil.class_exists(i))
+
 
 func test_get_parent_class() -> void:
 	for i in node2d:
@@ -62,17 +67,38 @@ func test_get_parent_class() -> void:
 	for i in unnamed_child:
 		assert_eq(ClassUtil.get_parent_class(i), &"")
 
+
 func test_get_ancestry_classes() -> void:
 	for i in node2d:
 		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node", "CanvasItem"])
 	for i in base:
 		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node"])
 	for i in test:
-		assert_arr_eq(ClassUtil.get_ancestry_classes(i), [ "Object", "Node", "__ClassTestScriptBase__",])
+		assert_arr_eq(
+			ClassUtil.get_ancestry_classes(i),
+			[
+				"Object",
+				"Node",
+				"__ClassTestScriptBase__",
+			]
+		)
 	for i in unnamed:
-		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node", ])
+		assert_arr_eq(
+			ClassUtil.get_ancestry_classes(i),
+			[
+				"Object",
+				"Node",
+			]
+		)
 	for i in unnamed_child:
-		assert_arr_eq(ClassUtil.get_ancestry_classes(i), ["Object", "Node","",   ])
+		assert_arr_eq(
+			ClassUtil.get_ancestry_classes(i),
+			[
+				"Object",
+				"Node",
+				"",
+			]
+		)
 
 
 func test_can_class_instantiate() -> void:
@@ -94,7 +120,7 @@ func test_can_class_instantiate() -> void:
 func test_class_call_static() -> void:
 	DirAccess.open("res://tests/non-existent-test")
 	assert_eq(ClassUtil.class_call_static("DirAccess", &"get_open_error"), ERR_INVALID_PARAMETER)
-	ClassUtil.class_call_static("Engine", &"is_editor_hint") # This is not a static function
+	ClassUtil.class_call_static("Engine", &"is_editor_hint")  # This is not a static function
 	assert_engine_error_count(1)
 
 	for i in base:
@@ -153,6 +179,7 @@ func test_class_get_constant_names() -> void:
 
 func assert_arr_eq(a, b):
 	assert_eq(Array(a), Array(b))
+
 
 func assert_arr_c(a, b):
 	a.sort()

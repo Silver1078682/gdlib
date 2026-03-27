@@ -85,7 +85,9 @@ static func preload_resources(folder_path: String, type_hint: String = "") -> Di
 			if resource:
 				result[file_name.rsplit(".", 1)[0]] = resource
 	return result
-	
 
-static func _print_open_error(error: Error, message :String, path: String) -> void:
-	push_error("opening file at %s failed: " % ProjectSettings.globalize_path(path)+ error_string(error))
+
+static func _print_open_error(error: Error, message: String, path: String) -> void:
+	push_error(
+		"opening file at %s failed: " % ProjectSettings.globalize_path(path) + error_string(error)
+	)

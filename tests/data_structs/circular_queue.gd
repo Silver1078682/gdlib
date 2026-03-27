@@ -1,5 +1,6 @@
 extends GutTest
 
+
 func before_all():
 	GutTestHelper.coverage(CircularQueue, self)
 
@@ -123,7 +124,7 @@ func test_typed_queue() -> void:
 	assert_eq(circular.get_at(-1), 3)
 
 	# Test pushing a string to a typed queue
-	circular.push_back("string") # Should fail because the queue
+	circular.push_back("string")  # Should fail because the queue
 	assert_engine_error_count(2)
 
 	# Test pushing an int to a typed queue

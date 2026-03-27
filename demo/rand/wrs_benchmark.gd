@@ -10,8 +10,8 @@ var _sample_result: Array
 const ALIAS_NAME = "Alias"
 const BINARY_SEARCH_NAME = "Binary Search"
 
-const INT_DICT = { "a": 1, "b": 2, "c": 3 }
-const FLOAT_DICT = { "a": 1.0, "b": 2.0, "c": 3.0 }
+const INT_DICT = {"a": 1, "b": 2, "c": 3}
+const FLOAT_DICT = {"a": 1.0, "b": 2.0, "c": 3.0}
 const LARGE_FLOAT_DICT = {
 	"a1": 1.0,
 	"b1": 2.0,
@@ -124,7 +124,7 @@ func draw_one_result(idx: int, color: Color, algo_name: String):
 	var dire := Vector2(TEST_COUNT, -k)
 	var y_axis = Vector2(0, -b / float(TEST_COUNT)) * GRID_SIZE
 	draw_line(
-		+dire + y_axis,
+		dire + y_axis,
 		-dire + y_axis,
 		color,
 	)

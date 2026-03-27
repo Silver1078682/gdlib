@@ -25,8 +25,10 @@ func before_each():
 		target.add_child(label, true)
 
 
-class CustomSearchBar extends SearchBar:
+class CustomSearchBar:
+	extends SearchBar
 	var search_cnt := 0
+
 	func search():
 		search_cnt += 1
 		super()
@@ -50,6 +52,7 @@ func test_filter() -> void:
 	search_bar.search()
 	_assert_only_label_n_is_visible(5)
 
+
 ## Test the sort functionality
 func test_sort() -> void:
 	var search_bar := CustomSearchBar.new()
@@ -61,6 +64,7 @@ func test_sort() -> void:
 		assert_true(node.name.ends_with(str(LABEL_COUNT - i - 1)))
 		assert_true(node.visible)
 
+
 ## Test on_submitted functionality
 func test_on_submitted():
 	var search_bar := CustomSearchBar.new()
@@ -70,8 +74,6 @@ func test_on_submitted():
 	search_bar.text_submitted.emit(search_bar.text)
 	assert_eq(search_bar.search_cnt, 1)
 	_assert_only_label_n_is_visible(5)
-
-
 
 
 ## Test search history functionality
@@ -141,8 +143,15 @@ func _test_history(search_bar: SearchBar, max_history_count: int):
 	for i in MORE_TEST_CNT:
 		_search(search_bar, "no%d" % i)
 	for i in MORE_TEST_CNT:
-		assert_does_not_have(search_bar.get_history(), ("no%d" % i), "search term no%d recorded when history recording is disabled" % i)
-		assert_true(search_bar.get_history().size() == max_history_count, "History list size is incorrect after limit")
+		assert_does_not_have(
+			search_bar.get_history(),
+			"no%d" % i,
+			"search term no%d recorded when history recording is disabled" % i
+		)
+		assert_true(
+			search_bar.get_history().size() == max_history_count,
+			"History list size is incorrect after limit"
+		)
 	search_bar.can_record_history = true
 
 
@@ -151,6 +160,7 @@ func _search(search_bar: SearchBar, search: String, arr = null):
 	search_bar.search()
 	if arr != null:
 		arr.append(search)
+
 
 func _assert_only_label_n_is_visible(n: int):
 	for i in range(LABEL_COUNT):

@@ -27,7 +27,7 @@ func filter_on(object: Object) -> PackedStringArray:
 	var declare_filter_list := parse_declare_filter(object)
 	var object_list := object.get_property_list()
 	var result: PackedStringArray = []
-	for prop_info in object_list: # name, class_name, type
+	for prop_info in object_list:  # name, class_name, type
 		if not match_rule(
 			name_pattern_whitelist,
 			name_pattern_blacklist,
@@ -36,13 +36,13 @@ func filter_on(object: Object) -> PackedStringArray:
 				return match_regex(pattern, prop_info.name)
 		):
 			continue
-		
+
 		if declare_whitelist:
-			if (prop_info.name not in declare_filter_list):
+			if prop_info.name not in declare_filter_list:
 				continue
-		elif (prop_info.name in declare_filter_list):
+		elif prop_info.name in declare_filter_list:
 			continue
-		
+
 		if prop_info.type == TYPE_OBJECT:
 			if not match_rule(
 				extends_whitelist,
@@ -82,7 +82,10 @@ func parse_declare_filter(object: Object) -> Dictionary:
 			result[prop_info.name] = null
 	return result
 
-func match_rule(whitelist: Array, blacklist: Array, prop_info: Dictionary, method: Callable) -> bool:
+
+func match_rule(
+	whitelist: Array, blacklist: Array, prop_info: Dictionary, method: Callable
+) -> bool:
 	if whitelist:
 		for element in whitelist:
 			if not method.call(element, prop_info):
@@ -91,6 +94,7 @@ func match_rule(whitelist: Array, blacklist: Array, prop_info: Dictionary, metho
 		if method.call(element, prop_info):
 			return false
 	return true
+
 
 func match_regex(pattern: String, subject: String):
 	return RegEx.create_from_string(pattern).search(subject) != null
