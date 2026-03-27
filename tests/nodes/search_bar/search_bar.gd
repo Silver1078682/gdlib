@@ -25,7 +25,7 @@ func before_each():
 
 class CustomSearchBar extends SearchBar:
 	## Override the default filter logic
-	func _should_filter(a: Node) -> bool:
+	func _should_match(a: Node) -> bool:
 		if a is Label and text in (a.text as String).to_lower():
 			return true
 		return false
@@ -38,7 +38,7 @@ func test_filter() -> void:
 
 	# Test with a matching keyword
 	search_bar.text = "5"
-	search_bar.filter()
+	search_bar.search()
 
 	# Verify only node 5 is visible
 	for i in range(LABEL_COUNT):
@@ -53,12 +53,7 @@ func test_filter() -> void:
 func test_on_submitted():
 	var search_bar := CustomSearchBar.new()
 	search_bar.target_parent = target
-	search_bar.on_submitted = true
-	search_bar.on_submitted = false
-	search_bar.on_submitted = true
-	search_bar.text = "5"
-	search_bar.filter() # Mock text submit action seems impossible
-
+	search_bar.text_submitted.emit("5")
 	# Verify only node 5 is visible
 	for i in range(LABEL_COUNT):
 		var node := target.get_child(i)
@@ -95,7 +90,7 @@ func test_varying_history() -> void:
 		arr.remove_at(0)
 		assert_eq(search_bar.get_history(), arr)
 
-	arr = search_bar.get_history().slice(0, 3)
+	arr = search_bar.get_history().slice(-3)
 	search_bar.max_history_count = 3
 	assert_eq(search_bar.get_history(), arr)
 	for i in 10:
@@ -142,6 +137,6 @@ func _test_history(search_bar: SearchBar, max_history_count: int):
 
 func _search(search_bar: SearchBar, search: String, arr = null):
 	search_bar.text = search
-	search_bar.filter()
+	search_bar.search()
 	if arr != null:
 		arr.append(search)
