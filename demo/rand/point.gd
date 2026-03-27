@@ -17,3 +17,7 @@ func _draw() -> void:
 		RandUtil.triangle.bind(Vector2(100, 300), Vector2(100, 200), Vector2(500, 500)).unbind(1)
 	):
 		draw_circle(i, 1, Color.GREEN)
+
+
+func _on_button_pressed() -> void:
+	queue_redraw()

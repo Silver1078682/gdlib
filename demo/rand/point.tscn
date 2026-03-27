@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://ccnyeocr01215"]
+
+[ext_resource type="Script" uid="uid://bvubqjxkia8xj" path="res://demo/rand/point.gd" id="1_qttke"]
+
+[node name="Point" type="Node2D" unique_id=1739353421]
+script = ExtResource("1_qttke")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1745956473]
+
+[node name="Button" type="Button" parent="." unique_id=396854339]
+offset_right = 8.0
+offset_bottom = 8.0
+text = "Refresh"
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

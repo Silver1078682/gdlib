@@ -1,0 +1,62 @@
+[gd_scene format=3 uid="uid://c6d8tint4xxwl"]
+
+[ext_resource type="Script" uid="uid://dw3hakx62odsg" path="res://demo/health/health.gd" id="1_85bdd"]
+[ext_resource type="Script" uid="uid://cf0r336axetu7" path="res://demo/health/health_bar.gd" id="2_85bdd"]
+
+[node name="Health" type="Node2D" unique_id=1277393918]
+script = ExtResource("1_85bdd")
+hp = 90
+
+[node name="Node" type="Node" parent="." unique_id=863307960]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Node" unique_id=412270618]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HSlider" type="HSlider" parent="Node/VBoxContainer" unique_id=1495049089]
+layout_mode = 2
+editable = false
+scrollable = false
+script = ExtResource("2_85bdd")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Node/VBoxContainer" unique_id=1467120202]
+layout_mode = 2
+
+[node name="Damage" type="Button" parent="Node/VBoxContainer/HBoxContainer" unique_id=1096296357]
+layout_mode = 2
+text = "Damage"
+
+[node name="Heal" type="Button" parent="Node/VBoxContainer/HBoxContainer" unique_id=1349625042]
+layout_mode = 2
+text = "Heal"
+
+[node name="Damagable" type="CheckButton" parent="Node/VBoxContainer/HBoxContainer" unique_id=1287278461]
+layout_mode = 2
+button_pressed = true
+text = "Damagable"
+
+[node name="Healable" type="CheckButton" parent="Node/VBoxContainer/HBoxContainer" unique_id=721273384]
+layout_mode = 2
+button_pressed = true
+text = "Healable"
+
+[node name="Killable" type="CheckButton" parent="Node/VBoxContainer/HBoxContainer" unique_id=135055473]
+layout_mode = 2
+button_pressed = true
+text = "Killable"
+
+[node name="Revivable" type="CheckButton" parent="Node/VBoxContainer/HBoxContainer" unique_id=1401753821]
+layout_mode = 2
+button_pressed = true
+text = "Revivable"
+
+[connection signal="hp_changed" from="." to="Node/VBoxContainer/HSlider" method="_on_health_hp_changed"]
+[connection signal="pressed" from="Node/VBoxContainer/HBoxContainer/Damage" to="." method="_on_damage_pressed"]
+[connection signal="pressed" from="Node/VBoxContainer/HBoxContainer/Heal" to="." method="_on_heal_pressed"]
+[connection signal="toggled" from="Node/VBoxContainer/HBoxContainer/Damagable" to="." method="_on_damagable_toggled"]
+[connection signal="toggled" from="Node/VBoxContainer/HBoxContainer/Healable" to="." method="_on_healable_toggled"]
+[connection signal="toggled" from="Node/VBoxContainer/HBoxContainer/Killable" to="." method="_on_killable_toggled"]
+[connection signal="toggled" from="Node/VBoxContainer/HBoxContainer/Revivable" to="." method="_on_revivable_toggled"]

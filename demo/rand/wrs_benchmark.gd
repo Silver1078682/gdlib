@@ -1,6 +1,8 @@
 extends Node2D
 ## Weighted Random Sampling benchmark
 ## (Alias VS BinarySearch)
+## Alias: Slower construction, Faster sampling
+## BinarySearch: Faster construction, Slower Sampling
 
 var _construct_result: Array
 var _sample_result: Array
