@@ -57,7 +57,7 @@ func push_back(value: Variant) -> void:
 		return
 	var _tail = (_head + _size) % _capacity
 	_datas[_tail] = value
-	if is_same(_datas[_tail], value): # Ensure the value modification succeed
+	if is_same(_datas[_tail], value):  # Ensure the value modification succeed
 		_size += 1
 
 

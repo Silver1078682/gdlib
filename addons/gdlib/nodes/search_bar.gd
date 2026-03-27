@@ -22,6 +22,7 @@ extends LineEdit
 ## Whether to sort children after filtering. See also [method _sort]
 @export var custom_sort := true
 
+
 #region custom behavior
 ## Override this function to define custom filter logic
 ## Implement this function to make sure the SearchBar works as expected
@@ -60,7 +61,13 @@ func search():
 		filtered.sort_custom(_sort)
 		for i in filtered.size():
 			target_parent.move_child(filtered[i], i)
-	target_parent.get_children().filter(func(a:Node):return not _should_match(a)).map(_on_not_matched)
+	(
+		target_parent
+		. get_children()
+		. filter(func(a: Node): return not _should_match(a))
+		. map(_on_not_matched)
+	)
+
 
 #endregion
 
@@ -81,9 +88,12 @@ signal history_navigated
 			return
 		if p_max_history_count == max_history_count:
 			return
-		_history_list = _history_list.slice(
-			max(_history_list.size() - p_max_history_count, 0),
-			_history_list.size(),
+		_history_list = (
+			_history_list
+			. slice(
+				max(_history_list.size() - p_max_history_count, 0),
+				_history_list.size(),
+			)
 		)
 		max_history_count = p_max_history_count
 
@@ -104,6 +114,7 @@ func add_history(text: String) -> void:
 		_history_list.remove_at(0)
 	_history_list.append(text)
 
+
 # index pointer to thw history we are currently at.
 var _history_pointer := -1
 
@@ -116,7 +127,7 @@ func _navigate_history(event: InputEvent) -> void:
 		var p_history_pointer: int
 		if event.is_action_pressed("ui_up"):
 			if _history_pointer == -1:
-				add_history(text) # Add current text to history
+				add_history(text)  # Add current text to history
 			p_history_pointer = _history_pointer - 1
 		elif event.is_action_pressed("ui_down"):
 			p_history_pointer = _history_pointer + 1
@@ -128,7 +139,7 @@ func _navigate_history(event: InputEvent) -> void:
 
 		text = _history_list.get(_history_list.size() + _history_pointer)
 		caret_column = text.length()
-		get_viewport().set_input_as_handled() # Override the default behavior of ui_up/down
+		get_viewport().set_input_as_handled()  # Override the default behavior of ui_up/down
 
 
 func _init() -> void:

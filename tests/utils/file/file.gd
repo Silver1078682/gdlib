@@ -2,8 +2,10 @@ extends GutTest
 
 const FOLDER = "res://tests/utils/file/test_folder/"
 
+
 func before_all():
 	GutTestHelper.coverage(FileUtil, self)
+
 
 func before_each():
 	DirAccess.make_dir_recursive_absolute(FOLDER)
@@ -35,7 +37,7 @@ func test_file_stream() -> void:
 		a.append(file_name[-1])
 	a.sort()
 	assert_eq(a, range(10).map(str))
-	
+
 
 func test_clear_dir() -> void:
 	FileUtil.open_file(FOLDER + "test_file.txt", FileAccess.ModeFlags.WRITE)
