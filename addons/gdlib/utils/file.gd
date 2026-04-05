@@ -1,6 +1,7 @@
 class_name FileUtil
 ## A helper to manipulate files and directories with ease.
 
+
 ## Open a file, print human-readable error messages on failure.
 static func open_file(path: String, access_mode: FileAccess.ModeFlags) -> FileAccess:
 	var file = FileAccess.open(path, access_mode)
@@ -69,21 +70,17 @@ static func clear_dir(dir: DirAccess, recursive := false) -> void:
 class FileStream:
 	var _dir: DirAccess
 
-
 	func _init(dir: DirAccess) -> void:
 		_dir = dir
-
 
 	func _iter_init(iter: Array) -> bool:
 		_dir.list_dir_begin()
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
 
-
 	func _iter_next(iter: Array) -> bool:
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
-
 
 	func _iter_get(iter: Variant) -> String:
 		return iter
@@ -92,13 +89,17 @@ class FileStream:
 ## Call [method load on all files in the folder [param folder_path].
 ## An optional [param type_hint] can be used to further specify the [Resource] type
 ## return a dictionary containing all Resource and their file_name
-static func preload_resources(folder_path: String, type_hint: String = "", recursive := false) -> Dictionary[String, Resource]:
-	var result: Dictionary = { }
+static func preload_resources(
+	folder_path: String, type_hint: String = "", recursive := false
+) -> Dictionary[String, Resource]:
+	var result: Dictionary = {}
 	for resource_name in ResourceLoader.list_directory(folder_path):
 		if resource_name.ends_with("/"):
 			continue
 		var file_path := folder_path.path_join(resource_name)
-		result[resource_name] = ResourceLoader.load(file_path, type_hint, ResourceLoader.CACHE_MODE_REPLACE)
+		result[resource_name] = ResourceLoader.load(
+			file_path, type_hint, ResourceLoader.CACHE_MODE_REPLACE
+		)
 	return result
 
 
