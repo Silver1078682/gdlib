@@ -1,13 +1,12 @@
 class_name FileUtil
 ## A helper to manipulate files and directories with ease.
 
-
 ## Open a file, print human-readable error messages on failure.
 static func open_file(path: String, access_mode: FileAccess.ModeFlags) -> FileAccess:
 	var file = FileAccess.open(path, access_mode)
 	var error := FileAccess.get_open_error()
 	if error:
-		_print_open_error(error, "opening file at %s failed: ", path)
+		_print_error(error, OPEN_FILE_FAILURE_MESSAGE, path)
 	return file
 
 
@@ -18,19 +17,19 @@ static func open_dir(path: String, force := false) -> DirAccess:
 	if force and not DirAccess.dir_exists_absolute(path):
 		error = DirAccess.make_dir_recursive_absolute(path)
 		if error:
-			_print_open_error(error, "opening directory at %s failed: ", path)
+			_print_error(error, OPEN_DIR_FAILURE_MESSAGE, path)
 			return
 		return open_dir(path, true)
 
 	var dir = DirAccess.open(path)
 	error = DirAccess.get_open_error()
 	if error:
-		_print_open_error(error, "opening directory at %s failed: ", path)
+		_print_error(error, OPEN_DIR_FAILURE_MESSAGE, path)
 	return dir
 
 
 ## Clear a directory.
-static func clear_dir(dir: DirAccess, recursive := true) -> void:
+static func clear_dir(dir: DirAccess, recursive := false) -> void:
 	dir.list_dir_begin()
 	var file_name = dir.get_next()
 	while file_name != "":
@@ -53,41 +52,45 @@ static func clear_dir(dir: DirAccess, recursive := true) -> void:
 class FileStream:
 	var _dir: DirAccess
 
+
 	func _init(dir: DirAccess) -> void:
 		_dir = dir
+
 
 	func _iter_init(iter: Array) -> bool:
 		_dir.list_dir_begin()
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
 
+
 	func _iter_next(iter: Array) -> bool:
 		iter[0] = _dir.get_next()
 		return not iter[0].is_empty()
+
 
 	func _iter_get(iter: Variant) -> String:
 		return iter
 
 
-## Call [method]load[method] on all files in the folder [param folder_path].
+## Call [method load on all files in the folder [param folder_path].
 ## An optional [param type_hint] can be used to further specify the [Resource] type
-## return a dictionary containing all Resource and their file_name (extension stripped)
-static func preload_resources(folder_path: String, type_hint: String = "") -> Dictionary:
-	var result: Dictionary = {}
-	var dir_access := open_dir(folder_path)
-	if dir_access:
-		var file_list = dir_access.get_files()
-		for file_name in file_list:
-			var file_path = folder_path + "/" + file_name
-			var resource := ResourceLoader.load(
-				file_path, type_hint, ResourceLoader.CACHE_MODE_REPLACE
-			)
-			if resource:
-				result[file_name.rsplit(".", 1)[0]] = resource
+## return a dictionary containing all Resource and their file_name
+static func preload_resources(folder_path: String, type_hint: String = "", recursive := false) -> Dictionary[String, Resource]:
+	var result: Dictionary = { }
+	for resource_name in ResourceLoader.list_directory(folder_path):
+		if resource_name.ends_with("/"):
+			continue
+		var file_path := folder_path.path_join(resource_name)
+		result[resource_name] = ResourceLoader.load(file_path, type_hint, ResourceLoader.CACHE_MODE_REPLACE)
 	return result
 
 
-static func _print_open_error(error: Error, message: String, path: String) -> void:
+const OPEN_FILE_FAILURE_MESSAGE = "opening file at %s failed: "
+const OPEN_DIR_FAILURE_MESSAGE = "opening directory at %s failed: "
+const CREATE_DIR_FAILURE_MESSAGE = "creating directory at %s failed: "
+
+
+static func _print_error(error: Error, message: String, path: String) -> void:
 	push_error(
-		"opening file at %s failed: " % ProjectSettings.globalize_path(path) + error_string(error)
+		message % ProjectSettings.globalize_path(path) + error_string(error),
 	)
